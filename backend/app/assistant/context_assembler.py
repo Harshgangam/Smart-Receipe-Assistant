@@ -15,6 +15,8 @@ from backend.app.recommendation.normalizer import (
     normalize_pantry_list,
     to_singular_form,
 )
+from backend.app.services.sandbox_engine import resolve_recipe_image_url
+
 
 
 class ContextAssembler:
@@ -42,6 +44,13 @@ class ContextAssembler:
         """
         Retrieves and compiles all verified ground-truth data for the given recipe and user session.
         """
+        if not pantry_ingredients:
+            try:
+                from backend.app.storage.pantry_store import pantry_store
+                active_items = pantry_store.get_all(status="available")
+                pantry_ingredients = [item.name for item in active_items]
+            except Exception:
+                pantry_ingredients = []
         pantry_ingredients = pantry_ingredients or []
 
         # 1. Fetch raw recipe details and derived metadata
@@ -130,6 +139,11 @@ class ContextAssembler:
             dietary_preference_applied=dietary_preference,
             cuisine_preference_applied=cuisine,
             max_cooking_time_applied=max_cooking_time_minutes,
+            image_url=resolve_recipe_image_url(
+                title=rec["title"],
+                cuisine=recipe_meta.get("cuisine"),
+                recipe_id=recipe_id,
+            ),
         )
 
     def format_context_for_prompt(self, context: StructuredRecipeContext) -> str:

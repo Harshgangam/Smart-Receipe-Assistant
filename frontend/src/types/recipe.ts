@@ -3,11 +3,15 @@ export interface SubstitutionCandidate {
   substitute: string;
   ratio: string | null;
   confidence: 'high' | 'medium' | 'low';
+  substitution_type?: 'direct' | 'functional' | 'combination' | 'optional_omission' | 'none' | string;
   reason: string;
   use_case?: string | null;
   dietary_compatible: boolean;
+  safety_status?: 'SAFE' | 'CAUTION' | 'BLOCKED' | string;
   notes?: string | null;
   source?: string | null;
+  can_omit?: boolean;
+  shopping_suggestion?: string | null;
 }
 
 
@@ -50,6 +54,12 @@ export interface RecipeRecommendationItem {
   ims: number;
   pus: number;
   recommendation_score: number;
+
+  image_url?: string | null;
+  safety_status?: 'SAFE' | 'CAUTION' | 'BLOCKED' | string;
+  safety_reasons?: string[];
+  estimated_missing_cost?: number;
+  food_waste_score?: number;
 
   why_this_recipe?: string;
   explanation: string;

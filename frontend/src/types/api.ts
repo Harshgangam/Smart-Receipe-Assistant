@@ -5,9 +5,11 @@ export interface PantryRequest {
   limit?: number;
   cuisine?: string | null;
   dietary_preference?: string | null;
+  allergens?: string[] | null;
   max_cooking_time_minutes?: number | null;
   rescue_mode?: boolean;
   pantry_items_details?: Partial<PantryItem>[];
+  query_text?: string | null;
 }
 
 export interface RecommendationResponse {
@@ -18,6 +20,7 @@ export interface RecommendationResponse {
   applied_preferences: {
     cuisine?: string | null;
     dietary_preference?: string | null;
+    allergens?: string[] | null;
     max_cooking_time_minutes?: number | null;
     rescue_mode?: boolean;
   };

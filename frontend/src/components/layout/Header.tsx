@@ -7,9 +7,31 @@ export const Header: React.FC = () => {
   const [online, setOnline] = useState<boolean>(true);
 
   useEffect(() => {
-    checkBackendHealth()
-      .then(() => setOnline(true))
-      .catch(() => setOnline(false));
+    let isMounted = true;
+    let failureCount = 0;
+
+    const verifyHealth = () => {
+      checkBackendHealth()
+        .then(() => {
+          failureCount = 0;
+          if (isMounted) setOnline(true);
+        })
+        .catch(() => {
+          failureCount += 1;
+          // Only show disconnected if 2 consecutive checks fail
+          if (isMounted && failureCount >= 2) {
+            setOnline(false);
+          }
+        });
+    };
+
+    verifyHealth();
+    const intervalId = setInterval(verifyHealth, 4000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   return (

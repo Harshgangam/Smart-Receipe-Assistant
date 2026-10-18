@@ -1,4 +1,3 @@
-from backend.app.recommendation.engine import RecommendationEngine
 from backend.app.recommendation.normalizer import (
     get_lookup_variants,
     normalize_pantry_ingredient,
@@ -11,6 +10,12 @@ from backend.app.recommendation.scorer import (
     calculate_pus,
     generate_explanation,
 )
+
+def __getattr__(name: str):
+    if name == "RecommendationEngine":
+        from backend.app.recommendation.engine import RecommendationEngine
+        return RecommendationEngine
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 __all__ = [
     "RecommendationEngine",

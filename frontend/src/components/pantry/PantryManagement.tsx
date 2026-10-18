@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PantryItem } from '../../types/recipe';
-import { fetchPantryItems, addPantryItem, deletePantryItem } from '../../services/api';
+import { fetchPantryItems, addPantryItem, deletePantryItem, fetchApi } from '../../services/api';
 
 interface PantryManagementProps {
   onPantryChange?: (items: string[]) => void;
@@ -51,7 +51,7 @@ export const PantryManagement: React.FC<PantryManagementProps> = ({ onPantryChan
     if (!ingredient.trim()) return;
     setFetchingShelfLife(true);
     try {
-      const res = await fetch(`/api/pantry/shelf-life/${encodeURIComponent(ingredient.trim())}`);
+      const res = await fetchApi(`/api/pantry/shelf-life/${encodeURIComponent(ingredient.trim())}`);
       if (res.ok) {
         const data = await res.json();
         setBaseShelfLife(data.base_shelf_life_days ?? 7);

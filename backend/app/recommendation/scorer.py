@@ -1,6 +1,10 @@
 from typing import Dict, List, Optional, Set, Tuple
 
-from backend.app.recommendation.normalizer import to_singular_form
+from backend.app.recommendation.normalizer import (
+    to_singular_form,
+    extract_core_food,
+    CULINARY_SYNONYMS,
+)
 
 
 def _dedup_recipe_ner(recipe_ner: List[str]) -> List[str]:
@@ -19,9 +23,92 @@ def _dedup_recipe_ner(recipe_ner: List[str]) -> List[str]:
     return deduped
 
 
+def is_semantic_match(ing: str, pantry_variants: Any) -> bool:
+    """
+    Evaluates whether a recipe ingredient semantically matches user's pantry:
+    - Direct exact match against lookup variants
+    - Singular form match
+    - Core food noun match (ignoring units, counts, preparation adjectives)
+    - Bidirectional culinary synonym match
+    """
+    if isinstance(pantry_variants, str):
+        from backend.app.recommendation.normalizer import get_lookup_variants
+        variants_set = {pantry_variants.lower().strip()}
+        variants_set.update(get_lookup_variants(pantry_variants))
+        core_pv = extract_core_food(pantry_variants)
+        if core_pv:
+            variants_set.add(core_pv)
+            variants_set.add(to_singular_form(core_pv))
+    else:
+        variants_set = set(pantry_variants)
+
+    ing_clean = ing.lower().strip()
+    if ing_clean in variants_set:
+        return True
+
+    sing = to_singular_form(ing_clean)
+    if sing in variants_set:
+        return True
+
+    core = extract_core_food(ing_clean)
+    if core and (core in variants_set or to_singular_form(core) in variants_set):
+        return True
+
+    core_sing = to_singular_form(core) if core else ""
+    if core_sing and core_sing in variants_set:
+        return True
+
+    # Synonyms lookup - check both forward and reverse mapping
+    candidates = [c for c in [core, core_sing, ing_clean, sing] if c]
+    for cand in candidates:
+        if cand in CULINARY_SYNONYMS:
+            if any(s in variants_set for s in CULINARY_SYNONYMS[cand]):
+                return True
+
+    for v in variants_set:
+        if v in CULINARY_SYNONYMS:
+            if any(c in CULINARY_SYNONYMS[v] for c in candidates):
+                return True
+
+    return False
+
+
+def resolve_canonical_pantry_item(
+    recipe_ing: str,
+    pantry_variants_to_canonical: Dict[str, str],
+) -> Optional[str]:
+    """
+    Resolves which canonical pantry item a recipe ingredient maps to semantically.
+    """
+    ing_clean = recipe_ing.lower().strip()
+    if ing_clean in pantry_variants_to_canonical:
+        return pantry_variants_to_canonical[ing_clean]
+
+    sing = to_singular_form(ing_clean)
+    if sing in pantry_variants_to_canonical:
+        return pantry_variants_to_canonical[sing]
+
+    core = extract_core_food(ing_clean)
+    if core and core in pantry_variants_to_canonical:
+        return pantry_variants_to_canonical[core]
+
+    core_sing = to_singular_form(core) if core else ""
+    if core_sing and core_sing in pantry_variants_to_canonical:
+        return pantry_variants_to_canonical[core_sing]
+
+    # Synonyms check
+    syns = CULINARY_SYNONYMS.get(core) or CULINARY_SYNONYMS.get(core_sing) or CULINARY_SYNONYMS.get(sing)
+    if syns:
+        for s in syns:
+            if s in pantry_variants_to_canonical:
+                return pantry_variants_to_canonical[s]
+
+    return None
+
+
 def calculate_ims(recipe_ner: List[str], pantry_variants: Set[str]) -> Tuple[float, List[str], List[str]]:
     """
-    Calculates the Ingredient Match Score (IMS):
+    Calculates the Ingredient Match Score (IMS) using semantic matching:
     IMS = (matched_recipe_ingredients / total_recipe_ingredients) * 100
 
     Recipe NER ingredients are deduplicated by singular form before scoring
@@ -36,7 +123,7 @@ def calculate_ims(recipe_ner: List[str], pantry_variants: Set[str]) -> Tuple[flo
     missing = []
 
     for ing in deduped_ner:
-        if ing in pantry_variants:
+        if is_semantic_match(ing, pantry_variants):
             matched.append(ing)
         else:
             missing.append(ing)
@@ -54,7 +141,7 @@ def calculate_pus(
     pantry_variants_to_canonical: dict,
 ) -> Tuple[float, int, int]:
     """
-    Calculates the Pantry Utilization Score (PUS):
+    Calculates the Pantry Utilization Score (PUS) using semantic mapping:
     PUS = (relevant_pantry_ingredients_used / total_relevant_pantry_ingredients) * 100
     """
     total_relevant = len(relevant_pantry)
@@ -63,7 +150,7 @@ def calculate_pus(
 
     used_relevant_canonical = set()
     for ing in recipe_ner:
-        canonical = pantry_variants_to_canonical.get(ing)
+        canonical = resolve_canonical_pantry_item(ing, pantry_variants_to_canonical)
         if canonical and canonical in relevant_pantry:
             used_relevant_canonical.add(canonical)
 
@@ -140,3 +227,15 @@ def generate_frps_explanation(
         reasons.append(f"Requires only {len(missing_ingredients)} additional grocery item(s).")
 
     return " ".join(reasons)
+
+
+def calculate_dcs(recipe_dietary: Optional[str], user_preference: Optional[str]) -> float:
+    """
+    Calculates Dietary Compatibility Score (DCS):
+    100.0 if compatible according to is_dietary_compatible, 0.0 if incompatible.
+    """
+    if not user_preference:
+        return 100.0
+    from backend.app.recommendation.personalizer import is_dietary_compatible
+    return 100.0 if is_dietary_compatible(recipe_dietary, user_preference) else 0.0
+

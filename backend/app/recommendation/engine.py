@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 from typing import Dict, List, Optional, Set, Any
 
 from backend.app.config import settings
@@ -10,6 +11,7 @@ from backend.app.models.recommendation import (
 from backend.app.pantry.pantry_store import pantry_store
 from backend.app.recommendation.hybrid_retriever import HybridRetriever, hybrid_retriever
 from backend.app.recommendation.normalizer import (
+    extract_core_food,
     get_lookup_variants,
     normalize_pantry_ingredient,
     normalize_pantry_list,
@@ -57,6 +59,7 @@ class RecommendationEngine:
         limit: Optional[int] = 10,
         cuisine: Optional[str] = None,
         dietary_preference: Optional[str] = None,
+        allergens: Optional[List[str]] = None,
         max_cooking_time_minutes: Optional[int] = None,
         pantry_items_details: Optional[List[Dict[str, Any]]] = None,
         query_text: Optional[str] = None,
@@ -72,6 +75,8 @@ class RecommendationEngine:
             applied_preferences["cuisine"] = cuisine
         if dietary_preference:
             applied_preferences["dietary_preference"] = dietary_preference
+        if allergens:
+            applied_preferences["allergens"] = allergens
         if max_cooking_time_minutes is not None:
             applied_preferences["max_cooking_time_minutes"] = max_cooking_time_minutes
 
@@ -98,7 +103,7 @@ class RecommendationEngine:
                 pantry_qty_map[n_clean] = item.quantity
                 pantry_qty_map[norm_clean] = item.quantity
 
-        # 1. Ingredient Normalization
+        # 1. Ingredient Normalization (Semantic deduplication and canonical resolution)
         normalized_pantry, all_lookup_variants = normalize_pantry_list(pantry_ingredients)
         if not normalized_pantry:
             return RecommendationResponse(
@@ -111,16 +116,18 @@ class RecommendationEngine:
 
         variant_to_canonical: Dict[str, str] = {}
         for item in pantry_ingredients:
-            norm = normalize_pantry_ingredient(item)
-            if norm:
-                canonical = to_singular_form(norm) if to_singular_form(norm) else norm
-                for var in get_lookup_variants(norm):
+            canonical = normalize_pantry_ingredient(item)
+            if canonical:
+                for var in get_lookup_variants(item):
+                    variant_to_canonical[var] = canonical
+                for var in get_lookup_variants(canonical):
                     variant_to_canonical[var] = canonical
 
         # 2. Hybrid Candidate Retrieval (FAISS Semantic Vector Search + SQLite Inverted Index)
+        search_query = query_text or (" ".join(normalized_pantry) if normalized_pantry else None)
         candidate_ids, details_map, metadata_map = self.hybrid_retriever.retrieve_candidates(
             pantry_variants=all_lookup_variants,
-            query_text=query_text,
+            query_text=search_query,
             limit=self.candidate_limit,
         )
 
@@ -133,14 +140,20 @@ class RecommendationEngine:
                 recommendations=[],
             )
 
-        # 3. Determine Relevant Pantry Set
+        # 3. Determine Relevant Pantry Set using semantic canonical matching
         relevant_pantry_set: Set[str] = set()
         for r_id in candidate_ids:
             rec = details_map.get(r_id)
             if not rec:
                 continue
             for ing in rec["ner"]:
-                canonical = variant_to_canonical.get(ing)
+                ing_clean = ing.lower().strip()
+                canonical = (
+                    variant_to_canonical.get(ing_clean)
+                    or variant_to_canonical.get(to_singular_form(ing_clean))
+                    or variant_to_canonical.get(extract_core_food(ing_clean))
+                    or variant_to_canonical.get(to_singular_form(extract_core_food(ing_clean)))
+                )
                 if canonical and canonical in normalized_pantry:
                     relevant_pantry_set.add(canonical)
 
@@ -152,6 +165,31 @@ class RecommendationEngine:
         for r_id in candidate_ids:
             rec = details_map.get(r_id)
             if not rec:
+                continue
+
+            # Quality Guardrail: Exclude recipes with empty or incomplete stub directions
+            raw_dirs = [d.strip() for d in (rec.get("directions") or []) if d and d.strip()]
+            if not raw_dirs:
+                continue
+
+            # Parse direction paragraphs into distinct step sentences
+            parsed_steps: List[str] = []
+            for d in raw_dirs:
+                cleaned_d = re.sub(r"^\d+[\.\)]\s*", "", d.strip())
+                # Split multi-sentence paragraph directions into actionable steps
+                sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z0-9])", cleaned_d)
+                for s in sentences:
+                    s_clean = s.strip()
+                    if s_clean:
+                        parsed_steps.append(s_clean)
+            if not parsed_steps:
+                parsed_steps = raw_dirs
+
+            # Exclude stub recipes that have only 1 step and less than 80 characters (e.g. only "You will need a pie plate.")
+            total_dir_len = sum(len(d) for d in parsed_steps)
+            if len(parsed_steps) < 2 and total_dir_len < 90:
+                continue
+            if any(d.lower().startswith("optional") for d in parsed_steps) and total_dir_len < 60:
                 continue
 
             recipe_ner = rec["ner"]
@@ -265,12 +303,50 @@ class RecommendationEngine:
                 dietary_filter_applied=dietary_preference,
             )
 
+            from backend.app.safety.allergen_guard import allergen_guard
+            from backend.app.services.food_waste_optimizer import food_waste_optimizer
+            from backend.app.services.shopping_optimizer import shopping_optimizer
+            from backend.app.services.sandbox_engine import resolve_recipe_image_url
+
+            # Hard Safety Filter with Semantic Allergen & Dietary Screening
+            safety_res = allergen_guard.check_recipe_safety(
+                recipe_id=r_id,
+                recipe_title=rec["title"],
+                ingredients=rec["ingredients"],
+                directions=rec["directions"],
+                user_allergens=allergens,
+                user_diet=dietary_preference,
+                recipe_ner=recipe_ner,
+            )
+            if safety_res.is_blocked:
+                continue
+
+            img_url = resolve_recipe_image_url(
+                title=rec["title"],
+                cuisine=recipe_meta.get("cuisine"),
+                recipe_id=r_id,
+                ner=recipe_ner,
+                ingredients=rec["ingredients"],
+                dietary_preference=dietary_preference,
+            )
+            missing_cost = sum(shopping_optimizer.estimate_item_cost(item).estimated_package_cost for item in missing)
+
+            waste_res = food_waste_optimizer.optimize_recipe_ranking(
+                recipe_id=r_id,
+                title=rec["title"],
+                matched_ingredients=matched,
+                missing_ingredients=missing,
+                pantry_expiry_map=pantry_risk_map,
+                total_pantry_count=len(normalized_pantry),
+                estimated_missing_cost=missing_cost,
+            )
+
             scored_candidates.append(
                 RecipeRecommendationItem(
                     recipe_id=r_id,
                     title=rec["title"],
                     ingredients=rec["ingredients"],
-                    directions=rec["directions"],
+                    directions=parsed_steps,
                     link=rec["link"],
                     source=rec["source"],
                     ner=recipe_ner,
@@ -283,6 +359,12 @@ class RecommendationEngine:
                     ims=ims,
                     pus=pus,
                     recommendation_score=final_ranking_score,
+
+                    image_url=img_url,
+                    safety_status=safety_res.status,
+                    safety_reasons=safety_res.reasons or safety_res.warnings,
+                    estimated_missing_cost=round(missing_cost, 2),
+                    food_waste_score=waste_res.composite_waste_score,
 
                     why_this_recipe=why_this_recipe,
                     explanation=full_explanation,
@@ -309,6 +391,20 @@ class RecommendationEngine:
         )
 
         top_recommendations = scored_candidates[:limit]
+
+        # 6. Guaranteed Collision-Free Unique & Relatable Image Assignment
+        used_recommendation_images: Set[str] = set()
+        for item in top_recommendations:
+            item.image_url = resolve_recipe_image_url(
+                title=item.title,
+                cuisine=item.cuisine,
+                recipe_id=item.recipe_id,
+                used_urls=used_recommendation_images,
+                ner=item.ner,
+                ingredients=item.ingredients,
+                dietary_preference=dietary_preference,
+            )
+            used_recommendation_images.add(item.image_url)
 
         return RecommendationResponse(
             normalized_pantry=normalized_pantry,

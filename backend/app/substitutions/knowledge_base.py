@@ -377,6 +377,50 @@ SUBSTITUTION_DATABASE: List[SubstitutionEntry] = [
         notes="Always whisk into cold water first to form a slurry before adding to hot liquid.",
         source="CIA Professional Chef",
     ),
+    SubstitutionEntry(
+        original_ingredient="flour",
+        substitute="whole wheat flour",
+        ratio="1:0.75 (or 50/50 blend)",
+        confidence="high",
+        dietary_compatibility=["vegetarian", "vegan"],
+        use_cases=["baking", "general"],
+        reason="Whole wheat flour contains the germ and bran, providing higher fiber and a nutty flavor. Use 3/4 cup per 1 cup white flour plus 1-2 tbsp extra liquid for moisture.",
+        notes="Works exceptionally well in rustic quick breads, muffins, and cookies.",
+        source="USDA Baking Science",
+    ),
+    SubstitutionEntry(
+        original_ingredient="flour",
+        substitute="oat flour",
+        ratio="1:1",
+        confidence="high",
+        dietary_compatibility=["vegetarian", "vegan", "gluten-free"],
+        use_cases=["baking", "general"],
+        reason="Ground rolled oats provide soluble beta-glucan fiber and moisture retention ideal for tender muffins, quick breads, and pancakes.",
+        notes="Can be made at home by blending rolled oats in a food processor until fine.",
+        source="Culinary Institute of America",
+    ),
+    SubstitutionEntry(
+        original_ingredient="flour",
+        substitute="1:1 gluten-free baking blend",
+        ratio="1:1",
+        confidence="high",
+        dietary_compatibility=["vegetarian", "vegan", "gluten-free"],
+        use_cases=["baking", "general"],
+        reason="Pre-blended rice flour, potato starch, and xanthan gum replicates the viscoelastic network of gluten.",
+        notes="Choose a blend containing xanthan gum for optimal muffin structure.",
+        source="CIA Allergen Guide",
+    ),
+    SubstitutionEntry(
+        original_ingredient="all-purpose flour",
+        substitute="whole wheat flour",
+        ratio="1:0.75",
+        confidence="high",
+        dietary_compatibility=["vegetarian", "vegan"],
+        use_cases=["baking", "general"],
+        reason="Whole wheat flour contains whole grain fiber and germ. Use 3/4 cup per 1 cup white flour or 50/50 mix with extra liquid.",
+        notes="Nutty flavor and higher moisture absorption.",
+        source="USDA Baking Guide",
+    ),
 
     # --------------------------------------------------------------------------
     # 6. HERBS AND AROMATICS
@@ -594,6 +638,340 @@ SUBSTITUTION_DATABASE: List[SubstitutionEntry] = [
         notes="Simmer 5 minutes to reduce slightly if thinner than jarred sauce.",
         source="CIA Kitchen Essentials",
     ),
+    SubstitutionEntry(
+        original_ingredient="banana",
+        substitute="ripe plantain or sweet potato puree",
+        ratio="1:1",
+        confidence="high",
+        dietary_compatibility=["vegetarian", "vegan"],
+        use_cases=["baking", "cooking", "dessert"],
+        reason="Ripe plantains or steamed sweet potato puree deliver equivalent starch density, natural sweetness, and moisture binding.",
+        notes="Best for pies, breads, and baked goods; sweet potato provides silky texture.",
+        source="Culinary Institute of America",
+    ),
+    SubstitutionEntry(
+        original_ingredient="banana",
+        substitute="applesauce or mango puree",
+        ratio="1:1 (1 mashed banana = 1/2 cup applesauce or mango puree)",
+        confidence="high",
+        dietary_compatibility=["vegetarian", "vegan"],
+        use_cases=["baking", "dessert", "smoothies"],
+        reason="Applesauce or ripe mango puree contains natural pectin and moisture that mimic the thickening and sweetening properties of mashed banana.",
+        notes="For cream pies or puddings, mango puree provides rich custard-like body.",
+        source="USDA Baking Guide",
+    ),
+    SubstitutionEntry(
+        original_ingredient="bananas",
+        substitute="ripe plantain or applesauce",
+        ratio="1:1",
+        confidence="high",
+        dietary_compatibility=["vegetarian", "vegan"],
+        use_cases=["baking", "dessert"],
+        reason="Provides identical moisture, pectin, and natural fruit sweetness in pies, muffins, and puddings.",
+        notes="Can use 1/2 cup applesauce per banana.",
+        source="CIA Food Standards",
+    ),
+
+    # --------------------------------------------------------------------------
+    # 13. MUSHROOMS & FUNGI (Savory Umami, Meaty Texture)
+    # --------------------------------------------------------------------------
+    SubstitutionEntry(
+        original_ingredient="mushroom",
+        substitute="cremini or baby bella mushrooms",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="earthy umami",
+        texture_notes="firm tender chew",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "sauces", "baking", "general"],
+        reason="Cremini and baby bella mushrooms share the same Agaricus bisporus species profile, providing identical earthy umami and moisture retention when sauteed.",
+        notes="Clean with damp cloth; browns identically in butter or olive oil.",
+        source="CIA Culinary Fundamentals",
+    ),
+    SubstitutionEntry(
+        original_ingredient="mushroom",
+        substitute="portobello mushrooms",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="deep rich umami",
+        texture_notes="dense meaty texture",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "sauces", "general"],
+        reason="Mature portobello caps provide deep savory umami and a robust steak-like bite perfect for pasta, skillet dishes, and roasting.",
+        notes="Scrape gills if a dark cooking sauce is undesirable.",
+        source="Culinary Institute of America",
+    ),
+    SubstitutionEntry(
+        original_ingredient="mushroom",
+        substitute="diced zucchini or eggplant",
+        ratio="1:1",
+        confidence="medium",
+        substitution_type="functional",
+        flavor_notes="mild vegetal savoriness",
+        texture_notes="soft tender absorption",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "sauces", "general"],
+        reason="Diced zucchini or eggplant absorbs savory skillet aromatics and provides matching tender volume and moisture in pasta sauces and casseroles.",
+        notes="Add a pinch of soy sauce or nutritional yeast to boost earthy umami if desired.",
+        source="USDA Culinary Standards",
+    ),
+    SubstitutionEntry(
+        original_ingredient="portabello mushrooms",
+        substitute="cremini mushrooms or white button mushrooms",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="savory umami",
+        texture_notes="tender bite",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "sauces", "general"],
+        reason="Cremini or button mushrooms yield comparable earthy flavor and tender texture in skillet sautés and pasta sauces.",
+        notes="Slice thickly to preserve structural bite.",
+        source="Culinary Institute of America",
+    ),
+
+    # --------------------------------------------------------------------------
+    # 14. PEPPERS & AROMATIC VEGETABLES (Crisp Bite, Sweet/Savory Pungency)
+    # --------------------------------------------------------------------------
+    SubstitutionEntry(
+        original_ingredient="green bell pepper",
+        substitute="red bell pepper or yellow bell pepper",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="sweet crisp capsicum",
+        texture_notes="crisp tender bite",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "salads", "sauces", "baking", "general"],
+        reason="Ripe sweet bell peppers provide the identical crisp texture, aromatic moisture, and structural volume, with slightly sweeter finish.",
+        notes="Adds vibrant color contrast to skillet stir-fries and pasta sauces.",
+        source="Culinary Institute of America",
+    ),
+    SubstitutionEntry(
+        original_ingredient="green bell pepper",
+        substitute="poblano pepper",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="earthy herbal pepper with mild warmth",
+        texture_notes="firm crisp bite",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "sauces", "baking", "general"],
+        reason="Poblanos mimic the earthy green vegetal notes of green bell peppers with a rich, complex roasted aroma and minimal heat.",
+        notes="Ideal for savory skillet dishes, fajitas, and baked pasta casseroles.",
+        source="CIA Regional Specialties",
+    ),
+    SubstitutionEntry(
+        original_ingredient="green bell pepper",
+        substitute="sliced celery or zucchini",
+        ratio="1:1",
+        confidence="medium",
+        substitution_type="functional",
+        flavor_notes="crisp fresh vegetal",
+        texture_notes="firm crunch",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "sauces", "salads", "general"],
+        reason="Celery supplies an essential aromatic crunch and moisture in mirepoix bases, while zucchini provides soft savory volume.",
+        notes="Dice finely when sautéing with onions and garlic.",
+        source="USDA Kitchen Substitution Guidelines",
+    ),
+    SubstitutionEntry(
+        original_ingredient="bell pepper",
+        substitute="cubed zucchini or celery",
+        ratio="1:1",
+        confidence="medium",
+        substitution_type="functional",
+        flavor_notes="mild fresh savory",
+        texture_notes="tender crisp",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["frying", "sauces", "general"],
+        reason="Provides equivalent vegetable bulk and textural contrast in skillet sauteing and simmered sauces.",
+        notes="Add early in cooking along with onions.",
+        source="USDA Food Standards",
+    ),
+
+    # --------------------------------------------------------------------------
+    # 15. CURED MEATS & SAUSAGES (Smoky, Savory Umami, Spiced Fat)
+    # --------------------------------------------------------------------------
+    SubstitutionEntry(
+        original_ingredient="pepperoni",
+        substitute="salami or chorizo",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="spicy smoky savory paprika",
+        texture_notes="chewy cured firmness",
+        dietary_compatibility=["non_vegetarian"],
+        allergens=[],
+        use_cases=["frying", "baking", "general"],
+        reason="Genoa salami or Spanish chorizo delivers identical cured pork fat, smoked paprika, garlic seasoning, and crisp edges upon heating.",
+        notes="Slice thinly for pizza, calzones, and baked skillet pasta.",
+        source="Culinary Institute of America",
+    ),
+    SubstitutionEntry(
+        original_ingredient="pepperoni",
+        substitute="turkey pepperoni",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="spicy cured savory poultry",
+        texture_notes="firm cured slice",
+        dietary_compatibility=["non_vegetarian"],
+        allergens=[],
+        use_cases=["baking", "frying", "general"],
+        reason="Pre-sliced turkey pepperoni matches traditional pepperoni spice blends with 70% less fat while crisping cleanly in the oven.",
+        notes="Leaner alternative with comparable smoky chew.",
+        source="USDA Nutrition Reference",
+    ),
+    SubstitutionEntry(
+        original_ingredient="pepperoni",
+        substitute="smoked paprika baked tofu or tempeh bacon",
+        ratio="1:1",
+        confidence="medium",
+        substitution_type="functional",
+        flavor_notes="smoky savory spiced paprika",
+        texture_notes="chewy crisp edges",
+        dietary_compatibility=["vegetarian", "vegan"],
+        allergens=["soy"],
+        use_cases=["baking", "frying", "general"],
+        reason="Thinly sliced tempeh or extra-firm tofu marinated with smoked paprika, garlic, fennel, and soy sauce replicates pepperoni's spicy savoriness.",
+        notes="Pan-sear in olive oil until crispy before layering on pasta or pizza.",
+        source="CIA Plant-Based Culinary Guide",
+    ),
+    SubstitutionEntry(
+        original_ingredient="pepperoni",
+        substitute="spiced sun-dried tomatoes and kalamata olives",
+        ratio="1:0.75",
+        confidence="medium",
+        substitution_type="functional",
+        flavor_notes="tangy salty umami herbal",
+        texture_notes="chewy bite",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["baking", "sauces", "general"],
+        reason="Delivers dense chew, concentrated savory saltiness, and bright Mediterranean acidity without meat or dairy.",
+        notes="Toss with oregano and red pepper flakes for bold Italian seasoning.",
+        source="CIA Mediterranean Kitchen Standards",
+    ),
+    SubstitutionEntry(
+        original_ingredient="ground beef",
+        substitute="ground turkey or ground chicken",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="savory poultry",
+        texture_notes="tender crumbled protein",
+        dietary_compatibility=["non_vegetarian"],
+        allergens=[],
+        use_cases=["frying", "sauces", "baking", "general"],
+        reason="Browns into comparable crumbled protein texture in skillet sauces, chilis, and casseroles.",
+        notes="Add 1 tbsp olive oil if using extra-lean poultry for added moisture.",
+        source="USDA Meat Standards",
+    ),
+    SubstitutionEntry(
+        original_ingredient="ground beef",
+        substitute="cooked brown lentils or crumbled firm tofu",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="functional",
+        flavor_notes="earthy savory umami",
+        texture_notes="tender protein crumbles",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["sauces", "frying", "general"],
+        reason="Cooked brown or green lentils absorb rich marinara aromatics and mimic the exact mouthfeel and protein bulk of ground beef in pasta sauces.",
+        notes="Simmer directly in tomato sauce for 15-20 minutes.",
+        source="CIA Plant-Based Culinary Guide",
+    ),
+
+    # --------------------------------------------------------------------------
+    # 16. MOZZARELLA & MELTING CHEESES (Mild, Creamy, Stretchy Melt)
+    # --------------------------------------------------------------------------
+    SubstitutionEntry(
+        original_ingredient="mozzarella",
+        substitute="provolone cheese",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="mild buttery creamy",
+        texture_notes="smooth elastic melt",
+        dietary_compatibility=["vegetarian"],
+        allergens=["dairy"],
+        use_cases=["baking", "sauces", "general"],
+        reason="Provolone is a closely related pasta filata pulled-curd cheese that melts with identical gooey elasticity and mild creamy flavor.",
+        notes="Use young/mild unaged provolone for pasta bakes and pizzas.",
+        source="Culinary Institute of America",
+    ),
+    SubstitutionEntry(
+        original_ingredient="mozzarella",
+        substitute="monterey jack cheese or mild cheddar",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="creamy mild buttery",
+        texture_notes="gooey melt",
+        dietary_compatibility=["vegetarian"],
+        allergens=["dairy"],
+        use_cases=["baking", "sauces", "general"],
+        reason="Monterey Jack melts exceptionally smoothly at low heat with a clean, neutral dairy creaminess.",
+        notes="Shred fresh from block for superior melt without anti-caking clumping.",
+        source="USDA Dairy Standards",
+    ),
+    SubstitutionEntry(
+        original_ingredient="mozzarella",
+        substitute="fontina or gouda cheese",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="buttery rich dairy",
+        texture_notes="creamy luscious melt",
+        dietary_compatibility=["vegetarian"],
+        allergens=["dairy"],
+        use_cases=["baking", "sauces", "general"],
+        reason="Both young Fontina and young Gouda melt flawlessly, providing velvety stringy richness over casseroles.",
+        notes="Fantastic for gratins, macaroni, and baked pasta dishes.",
+        source="CIA Cheese & Dairy Guide",
+    ),
+    SubstitutionEntry(
+        original_ingredient="mozzarella",
+        substitute="plant-based vegan mozzarella shreds",
+        ratio="1:1",
+        confidence="high",
+        substitution_type="direct",
+        flavor_notes="mild creamy coconut/tapioca",
+        texture_notes="gooey melt",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=[],
+        use_cases=["baking", "sauces", "general"],
+        reason="Tapioca- and coconut-based vegan shreds (such as Violife or Miyoko's) melt into stretchy dairy-free layers with mild neutral taste.",
+        notes="Cover casserole during baking to retain moisture for optimal melt.",
+        source="CIA Plant-Based Culinary Guide",
+    ),
+    SubstitutionEntry(
+        original_ingredient="mozzarella",
+        substitute="cashew mozzarella cream",
+        ratio="1:1",
+        confidence="medium",
+        substitution_type="functional",
+        flavor_notes="rich mild nutty cream",
+        texture_notes="velvety thick sauce",
+        dietary_compatibility=["vegetarian", "vegan", "gluten_free"],
+        allergens=["tree_nuts"],
+        use_cases=["baking", "sauces", "general"],
+        reason="Blended soaked cashews with tapioca starch and lemon juice thicken into a decadent, gooey dairy-free melted cheese layer.",
+        notes="Spoon over baked pasta before baking until bubbling.",
+        source="Joy of Cooking Standards",
+    ),
 ]
 
 # Build fast in-memory normalized index for ingredient lookup
@@ -610,24 +988,32 @@ for entry in SUBSTITUTION_DATABASE:
 def get_substitutions_for_ingredient(ingredient_name: str) -> List[SubstitutionEntry]:
     """
     Lookup substitution candidates for a given ingredient name.
-    Performs case-insensitive matching and plural/singular stripping.
+    Performs canonical normalization, descriptor stripping, alias resolution,
+    and plural/singular mapping.
     """
     if not ingredient_name:
         return []
 
+    from backend.app.substitutions.normalizer import resolve_canonical_ingredient
+
+    canonical = resolve_canonical_ingredient(ingredient_name)
     norm = ingredient_name.lower().strip()
 
-    # Exact match in index
+    # 1. Check canonical match
+    if canonical in _SUBSTITUTION_INDEX:
+        return _SUBSTITUTION_INDEX[canonical]
+
+    # 2. Check exact normalized string
     if norm in _SUBSTITUTION_INDEX:
         return _SUBSTITUTION_INDEX[norm]
 
-    # Check singularized form (e.g. 'eggs' -> 'egg', 'shallots' -> 'shallot')
+    # 3. Check singularized form (e.g. 'eggs' -> 'egg', 'shallots' -> 'shallot')
     if norm.endswith("s") and norm[:-1] in _SUBSTITUTION_INDEX:
         return _SUBSTITUTION_INDEX[norm[:-1]]
 
-    # Substring search for multi-word ingredients (e.g. 'unsalted butter' -> 'butter')
+    # 4. Substring search for multi-word ingredients (e.g. 'unsalted butter' -> 'butter')
     for key, entries in _SUBSTITUTION_INDEX.items():
-        if key in norm or norm in key:
+        if key in canonical or canonical in key or key in norm or norm in key:
             return entries
 
     return []

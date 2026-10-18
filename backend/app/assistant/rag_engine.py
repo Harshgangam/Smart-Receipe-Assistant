@@ -56,6 +56,13 @@ class RAGKnowledgeBase:
                 metadata={"role": "aromatic", "ingredient": "onion"}
             ),
             KnowledgeDocument(
+                id="kb_sub_banana",
+                category="substitution_rules",
+                title="Banana Substitutions in Baking & Desserts",
+                content="Bananas can be substituted with: ripe plantains (1:1, identical starch and texture), applesauce or mango puree (1:1, 1/2 cup puree per mashed banana, adds natural pectin and sweetness), or steamed sweet potato puree for pies and puddings.",
+                metadata={"ingredient": "banana", "role": "sweetener_binder", "dietary": ["vegan", "vegetarian"]}
+            ),
+            KnowledgeDocument(
                 id="kb_storage_1",
                 category="storage_guidance",
                 title="Spinach Freshness Preservation",
@@ -145,6 +152,27 @@ class RAGKnowledgeBase:
                 title="Lemon Juice Substitutions",
                 content="Lemon juice can be substituted with: equal amount of lime juice, white vinegar (use half the amount), or apple cider vinegar (use half the amount). For zest, use 1/2 tsp dried lemon peel per 1 tsp fresh zest.",
                 metadata={"ingredient": "lemon", "role": "acid"}
+            ),
+            KnowledgeDocument(
+                id="kb_sub_9",
+                category="substitution_rules",
+                title="Flour Substitutions (Whole Wheat, Almond, Oat, Gluten-Free)",
+                content="All-purpose flour can be substituted with: Whole Wheat Flour (use 3/4 cup per 1 cup white flour, or 50/50 mix plus 1-2 tbsp extra liquid for moisture), Oat Flour (1:1 ratio for muffins and cookies), Almond Flour (1:1 ratio, baked goods will be denser and richer), or 1:1 Gluten-Free Baking Blend with xanthan gum.",
+                metadata={"ingredient": "flour", "role": "structure", "dietary": ["gluten-free", "whole-grain"]}
+            ),
+            KnowledgeDocument(
+                id="kb_sub_10",
+                category="substitution_rules",
+                title="Sugar and Sweetener Substitutions",
+                content="White sugar can be substituted with: brown sugar (1:1, adds moisture and caramel notes), honey or maple syrup (use 3/4 cup per 1 cup sugar and reduce other liquids by 3 tbsp), or coconut sugar (1:1 ratio).",
+                metadata={"ingredient": "sugar", "role": "sweetener"}
+            ),
+            KnowledgeDocument(
+                id="kb_sub_11",
+                category="substitution_rules",
+                title="Baking Powder and Soda Substitutions",
+                content="1 tsp baking powder can be substituted with: 1/4 tsp baking soda plus 1/2 tsp cream of tartar (or 1/2 tsp vinegar/lemon juice mixed into liquid ingredients).",
+                metadata={"ingredient": "baking powder", "role": "leavening"}
             ),
             KnowledgeDocument(
                 id="kb_storage_3",

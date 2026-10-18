@@ -16,16 +16,45 @@ if (isWin && fs.existsSync(venvWin)) {
   pythonCmd = venvPosix;
 }
 
-const args = ['-m', 'uvicorn', 'backend.app.main:app', '--host', '127.0.0.1', '--port', '8000', '--reload'];
+const net = require('net');
 
-console.log(`[BACKEND] Starting FastAPI backend with ${pythonCmd}...`);
+function isPortAvailable(port, host) {
+  return new Promise((resolve) => {
+    const server = net.createServer();
+    server.once('error', (err) => {
+      resolve(false);
+    });
+    server.once('listening', () => {
+      server.close(() => resolve(true));
+    });
+    server.listen(port, host);
+  });
+}
 
-const proc = spawn(pythonCmd, args, {
-  cwd: rootDir,
-  stdio: 'inherit',
-  env: { ...process.env, PYTHONPATH: rootDir }
-});
+async function main() {
+  const port = parseInt(process.env.PORT || '8000', 10);
+  const host = process.env.HOST || '127.0.0.1';
 
-proc.on('exit', (code) => {
-  process.exit(code || 0);
-});
+  let available = await isPortAvailable(port, host);
+  if (!available) {
+    console.log(`[BACKEND] Port ${port} is currently busy. Waiting 2 seconds for previous process to release...`);
+    await new Promise((r) => setTimeout(r, 2000));
+    available = await isPortAvailable(port, host);
+  }
+
+  const args = ['-m', 'uvicorn', 'backend.app.main:app', '--host', host, '--port', String(port), '--reload'];
+
+  console.log(`[BACKEND] Starting FastAPI backend with ${pythonCmd} on http://${host}:${port}...`);
+
+  const proc = spawn(pythonCmd, args, {
+    cwd: rootDir,
+    stdio: 'inherit',
+    env: { ...process.env, PYTHONPATH: rootDir }
+  });
+
+  proc.on('exit', (code) => {
+    process.exit(code || 0);
+  });
+}
+
+main();

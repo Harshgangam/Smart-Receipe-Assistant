@@ -20,18 +20,18 @@ def is_dietary_compatible(
     user_pref = user_preference.lower()
     recipe_diet = (recipe_dietary or "").lower()
 
-    if user_pref == "vegetarian":
-        if recipe_diet == "non_vegetarian":
+    if user_pref in ("vegetarian", "vegetarian_compatible", "veg"):
+        if recipe_diet in ("non_vegetarian", "non-vegetarian", "non_veg"):
             return False
         return True
 
-    if user_pref == "vegan":
-        if recipe_diet in ("non_vegetarian", "vegetarian_compatible"):
+    if user_pref in ("vegan", "vegan_compatible"):
+        if recipe_diet in ("non_vegetarian", "non-vegetarian", "non_veg", "vegetarian_compatible"):
             return False
         return True
 
     if user_pref in ("non_vegetarian", "non-vegetarian", "non_veg"):
-        if recipe_diet == "non_vegetarian":
+        if recipe_diet in ("non_vegetarian", "non-vegetarian", "non_veg"):
             return True
         return False
 

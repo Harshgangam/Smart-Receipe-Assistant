@@ -22,7 +22,9 @@ class RecommendationService:
             limit=request.limit,
             cuisine=request.cuisine,
             dietary_preference=request.dietary_preference,
+            allergens=request.allergens,
             max_cooking_time_minutes=request.max_cooking_time_minutes,
+            query_text=request.query_text,
             pantry_items_details=request.pantry_items_details,
         )
 

@@ -214,3 +214,119 @@ def test_scenario_m_deterministic_behavior():
         assert s1.ratio == s2.ratio
         assert s1.confidence == s2.confidence
         assert s1.reason == s2.reason
+
+
+# ==============================================================================
+# Additional Tests: Mushrooms, Green Bell Peppers, Pepperoni, Mozzarella & Hard-Locks
+# ==============================================================================
+
+def test_mushrooms_substitutions():
+    """Verify mushroom candidate evaluation (direct and functional options)."""
+    subs = substitution_service.get_substitutions_for_ingredient(
+        missing_ingredient="portabello mushrooms",
+        context="frying",
+    )
+    assert len(subs) >= 1
+    sub_names = [s.substitute.lower() for s in subs]
+    assert any("cremini" in name or "button" in name or "zucchini" in name for name in sub_names)
+    assert subs[0].confidence in ("high", "medium")
+
+
+def test_green_bell_peppers_substitutions():
+    """Verify green bell pepper substitutions across color variants and functional crunches."""
+    subs = substitution_service.get_substitutions_for_ingredient(
+        missing_ingredient="green bell pepper",
+        context="frying",
+    )
+    assert len(subs) >= 1
+    sub_names = [s.substitute.lower() for s in subs]
+    assert any("bell pepper" in name or "poblano" in name or "celery" in name for name in sub_names)
+
+
+def test_pepperoni_substitutions_and_dietary():
+    """Verify pepperoni provides meat equivalents normally and plant alternatives under vegetarian."""
+    # General (non-vegetarian)
+    subs_gen = substitution_service.get_substitutions_for_ingredient(
+        missing_ingredient="pepperoni",
+        context="baking",
+    )
+    assert len(subs_gen) >= 1
+    assert any("salami" in s.substitute.lower() or "turkey" in s.substitute.lower() for s in subs_gen)
+
+    # Vegetarian Hard-Lock: Pork/beef cured meats must be strictly excluded
+    subs_veg = substitution_service.get_substitutions_for_ingredient(
+        missing_ingredient="pepperoni",
+        dietary_preference="vegetarian",
+    )
+    assert len(subs_veg) >= 1
+    for s in subs_veg:
+        assert "salami" not in s.substitute.lower()
+        assert "chorizo" not in s.substitute.lower()
+        assert any(term in s.substitute.lower() for term in ["tofu", "tempeh", "tomato", "olive"])
+
+
+def test_mozzarella_substitutions_and_allergen_hardlock():
+    """Verify mozzarella returns melting cheeses normally and dairy-free options under dairy allergy."""
+    # General: Provolone, Monterey Jack, Fontina
+    subs_gen = substitution_service.get_substitutions_for_ingredient(
+        missing_ingredient="mozzarella cheese",
+        context="baking",
+    )
+    assert len(subs_gen) >= 1
+    assert any("provolone" in s.substitute.lower() or "jack" in s.substitute.lower() or "fontina" in s.substitute.lower() for s in subs_gen)
+
+    # Allergen Hard-Lock: When user has dairy allergy, dairy cheeses must be blocked
+    subs_dairy_free = substitution_service.get_substitutions_for_ingredient(
+        missing_ingredient="mozzarella cheese",
+        allergens=["dairy"],
+    )
+    assert len(subs_dairy_free) >= 1
+    for s in subs_dairy_free:
+        assert "provolone" not in s.substitute.lower()
+        assert "cheddar" not in s.substitute.lower()
+        assert any(term in s.substitute.lower() for term in ["vegan", "plant-based", "cashew"])
+
+
+def test_pepperoni_spaghetti_recipe_evaluation():
+    """Evaluate Pepperoni Spaghetti fixture (contains mushrooms, green pepper, pepperoni, mozzarella)."""
+    fixture_missing = ["green pepper", "sliced pepperoni", "mushrooms", "mozzarella cheese"]
+    subs = substitution_service.get_substitutions_for_recipe(
+        missing_ingredients=fixture_missing,
+        recipe_title="Pepperoni Spaghetti",
+        directions=["Combine onion, green pepper, ground beef and pepperoni in a large skillet."],
+    )
+    missing_covered = {s.missing_ingredient for s in subs}
+    # Each missing item evaluated independently and assigned suitable candidates
+    assert "green pepper" in missing_covered
+    assert "sliced pepperoni" in missing_covered
+    assert "mushrooms" in missing_covered
+    assert "mozzarella cheese" in missing_covered
+
+
+def test_universal_missing_ingredient_coverage_and_omission():
+    """Test universal coverage: evaluated items with valid substitutes, omissions, and unknown non-fabricated items."""
+    test_set = [
+        "portabello mushrooms",      # known with direct substitute
+        "green bell pepper",         # known with direct substitute
+        "parsley",                   # garnish with optional omission
+        "extraterrestrial_truffle",  # unknown with no fabrication
+    ]
+    subs = substitution_service.get_substitutions_for_recipe(
+        missing_ingredients=test_set,
+        recipe_title="Gourmet Pasta",
+        directions=["Cook in skillet."],
+    )
+    subs_by_item = {s.missing_ingredient: s for s in subs}
+
+    # 1. Known items receive validated substitutes
+    assert "portabello mushrooms" in subs_by_item
+    assert "green bell pepper" in subs_by_item
+
+    # 2. Garnish receives explicit optional omission option
+    assert "parsley" in subs_by_item
+    assert subs_by_item["parsley"].substitution_type == "optional_omission"
+    assert subs_by_item["parsley"].can_omit is True
+
+    # 3. Unknown item is NOT fabricated
+    assert "extraterrestrial_truffle" not in subs_by_item
+

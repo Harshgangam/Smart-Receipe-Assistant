@@ -9,7 +9,13 @@ export function useRecommendations() {
   const [error, setError] = useState<string | null>(null);
 
   const search = useCallback(
-    async (pantry: string[], preferences: PreferencesState, limit: number = 10, rescueMode: boolean = false) => {
+    async (
+      pantry: string[],
+      preferences: PreferencesState,
+      limit: number = 10,
+      rescueMode: boolean = false,
+      queryText?: string | null
+    ) => {
       if (!pantry || pantry.length === 0) {
         setError('Please enter at least one pantry ingredient.');
         return;
@@ -24,7 +30,9 @@ export function useRecommendations() {
         cuisine: preferences.cuisine || null,
         dietary_preference: preferences.dietary || null,
         max_cooking_time_minutes: preferences.maxCookingTime || null,
+        allergens: preferences.allergens && preferences.allergens.length > 0 ? preferences.allergens : undefined,
         rescue_mode: rescueMode,
+        query_text: queryText || null,
       };
 
       try {

@@ -1,5 +1,131 @@
 [
   {
+    "id": "n_1792255990764",
+    "message": "You just cooked 'Peanut Butter Banana Oat Smoothie'! Automatically utilized 3 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-17 22:23"
+  },
+  {
+    "id": "n_1792255502729",
+    "message": "Your dosa batter has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-17 22:15"
+  },
+  {
+    "id": "n_1792255502726",
+    "message": "Your panner has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-17 22:15"
+  },
+  {
+    "id": "n_1792255502721",
+    "message": "Your rice has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-17 22:15"
+  },
+  {
+    "id": "n_1792255502716",
+    "message": "Your custard has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-17 22:15"
+  },
+  {
+    "id": "n_1792255502711",
+    "message": "Your corainder has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-17 22:15"
+  },
+  {
+    "id": "n_1791829800111",
+    "message": "Your pomegranated has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-13 00:00"
+  },
+  {
+    "id": "n_1791829701272",
+    "message": "You just cooked 'Peanut Butter Banana Oat Smoothie'! Automatically utilized 3 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-12 23:58"
+  },
+  {
+    "id": "n_1791821407895",
+    "message": "You just cooked 'Peanut-Banana Smoothie'! Automatically utilized 4 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-12 21:40"
+  },
+  {
+    "id": "n_1791751725610",
+    "message": "You just cooked 'Stuffed Cabbage Rolls'! Automatically utilized 5 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-12 02:18"
+  },
+  {
+    "id": "n_1791656071077",
+    "message": "Your bread has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
+    "id": "n_1791656071075",
+    "message": "Your tomato has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
+    "id": "n_1791656071074",
+    "message": "Your salt has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
+    "id": "n_1791656071072",
+    "message": "Your butter has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
+    "id": "n_1791656071071",
+    "message": "Your onion has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
+    "id": "n_1791656071069",
+    "message": "Your garlic has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
+    "id": "n_1791656071068",
+    "message": "Your chicken has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
+    "id": "n_1791656071063",
+    "message": "Your pea has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-10 23:44"
+  },
+  {
     "id": "n_1788705707033",
     "message": "You just cooked 'Andy'S Homemade Peas'! Automatically utilized 1 ingredients from your pantry.",
     "type": "cooked",

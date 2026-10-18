@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus } from 'lucide-react';
+import { fetchApi } from '../../services/api';
 
 type FreshnessLevel = 'fresh' | 'few_days_old' | 'use_immediately';
 
@@ -39,7 +40,7 @@ export const PantryInput: React.FC<PantryInputProps> = ({ onAdd }) => {
     if (!ingredient.trim()) return;
     setFetchingShelfLife(true);
     try {
-      const res = await fetch(`/api/pantry/shelf-life/${encodeURIComponent(ingredient.trim())}`);
+      const res = await fetchApi(`/api/pantry/shelf-life/${encodeURIComponent(ingredient.trim())}`);
       if (res.ok) {
         const data = await res.json();
         setBaseShelfLife(data.base_shelf_life_days ?? 7);
@@ -97,51 +98,74 @@ export const PantryInput: React.FC<PantryInputProps> = ({ onAdd }) => {
 
       {/* Freshness buttons — appear once user starts typing */}
       {showFreshness && (
-        <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '10px 12px' }}>
-          <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '7px', display: 'flex', justifyContent: 'space-between' }}>
-            <span>How fresh is <strong style={{ color: '#f3f4f6' }}>{value}</strong>?</span>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          border: '1.5px solid rgba(255, 255, 255, 0.9)',
+          borderRadius: '12px',
+          padding: '12px 14px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
+          marginTop: '4px',
+        }}>
+          <div style={{
+            fontSize: '13px',
+            color: '#1e293b',
+            fontWeight: 700,
+            marginBottom: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+            <span>How fresh is <strong style={{ color: '#0f172a', textDecoration: 'underline' }}>{value}</strong>?</span>
             {!fetchingShelfLife && (
-              <span style={{ color: '#6366f1' }}>
-                Base shelf life: <strong>{baseShelfLife}d</strong>
+              <span style={{ color: '#2563eb', fontWeight: 800 }}>
+                Base shelf life: {baseShelfLife}d
               </span>
             )}
           </div>
 
           {/* 3 Freshness Buttons */}
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
-            {FRESHNESS_OPTIONS.map(opt => (
-              <button
-                key={opt.key}
-                type="button"
-                onClick={() => setFreshness(opt.key)}
-                style={{
-                  flex: 1,
-                  padding: '6px 8px',
-                  borderRadius: '7px',
-                  border: freshness === opt.key
-                    ? `2px solid ${opt.color}`
-                    : '2px solid rgba(255,255,255,0.08)',
-                  background: freshness === opt.key ? opt.bg : 'rgba(0,0,0,0.15)',
-                  color: freshness === opt.key ? opt.color : '#9ca3af',
-                  cursor: 'pointer',
-                  fontWeight: freshness === opt.key ? 700 : 400,
-                  fontSize: '12px',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {opt.emoji} {opt.label}
-              </button>
-            ))}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+            {FRESHNESS_OPTIONS.map(opt => {
+              const isSelected = freshness === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setFreshness(opt.key)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    borderRadius: '10px',
+                    border: isSelected ? `2.5px solid ${opt.color}` : '1.5px solid #cbd5e1',
+                    background: isSelected ? opt.bg : '#ffffff',
+                    color: isSelected ? opt.color : '#1e293b',
+                    cursor: 'pointer',
+                    fontWeight: isSelected ? 800 : 700,
+                    fontSize: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '5px',
+                    boxShadow: isSelected ? '0 4px 12px rgba(0,0,0,0.1)' : '0 2px 6px rgba(0,0,0,0.04)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <span>{opt.emoji}</span>
+                  <span style={{ color: isSelected ? opt.color : '#0f172a' }}>{opt.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Live expiry preview */}
-          <div style={{ fontSize: '11px', color: '#9ca3af' }}>
+          <div style={{ fontSize: '12px', color: '#334155', fontWeight: 600 }}>
             Will expire in:{' '}
             <span style={{
-              fontWeight: 700,
-              color: computedExpiryDays <= 2 ? '#ef4444'
-                   : computedExpiryDays <= 6 ? '#f59e0b'
-                   : '#10b981',
+              fontWeight: 800,
+              fontSize: '13px',
+              color: computedExpiryDays <= 2 ? '#dc2626'
+                   : computedExpiryDays <= 6 ? '#d97706'
+                   : '#059669',
             }}>
               {computedExpiryDays} day{computedExpiryDays !== 1 ? 's' : ''} from today
             </span>

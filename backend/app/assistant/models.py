@@ -85,6 +85,7 @@ class StructuredRecipeContext(BaseModel):
     dietary_preference_applied: Optional[str] = None
     cuisine_preference_applied: Optional[str] = None
     max_cooking_time_applied: Optional[int] = None
+    image_url: Optional[str] = None
 
 
 class AssistantResponse(BaseModel):

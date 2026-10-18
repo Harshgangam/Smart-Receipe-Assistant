@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { addPantryItem } from '../services/api';
+import { isSameFood } from '../utils/foodNormalizer';
 
 export function usePantry(initialIngredients: string[] = []) {
   const [ingredients, setIngredients] = useState<string[]>(initialIngredients);
@@ -8,6 +9,7 @@ export function usePantry(initialIngredients: string[] = []) {
    * Adds ingredient to local state AND calls the backend pantry API
    * when expiryDays is provided (set via Freshness Buttons).
    * This ensures the Dynamic Pantry Intelligence tab gets a live countdown.
+   * Recognizes ingredients semantically (e.g. "4 potatoes" and "potatoes" are the same).
    */
   const addIngredient = useCallback((rawItem: string, expiryDays?: number): boolean => {
     if (!rawItem || !rawItem.trim()) return false;
@@ -20,11 +22,10 @@ export function usePantry(initialIngredients: string[] = []) {
 
     let addedCount = 0;
     setIngredients((prev) => {
-      const existing = new Set(prev.map((i) => i.toLowerCase()));
       const next = [...prev];
       for (const item of items) {
-        if (!existing.has(item)) {
-          existing.add(item);
+        const alreadyExists = next.some((existing) => isSameFood(existing, item));
+        if (!alreadyExists) {
           next.push(item);
           addedCount++;
 
@@ -52,7 +53,7 @@ export function usePantry(initialIngredients: string[] = []) {
 
   const removeIngredient = useCallback((itemToRemove: string) => {
     setIngredients((prev) =>
-      prev.filter((i) => i.toLowerCase() !== itemToRemove.toLowerCase())
+      prev.filter((i) => !isSameFood(i, itemToRemove) && i.toLowerCase() !== itemToRemove.toLowerCase())
     );
   }, []);
 
@@ -62,17 +63,19 @@ export function usePantry(initialIngredients: string[] = []) {
 
   const addMultiple = useCallback((newItems: string[]) => {
     setIngredients((prev) => {
-      const existing = new Set(prev.map((i) => i.toLowerCase()));
       const next = [...prev];
       for (const item of newItems) {
         const norm = item.trim().toLowerCase();
-        if (norm && !existing.has(norm)) {
-          existing.add(norm);
+        if (norm && !next.some((existing) => isSameFood(existing, norm))) {
           next.push(norm);
         }
       }
       return next;
     });
+  }, []);
+
+  const setPantry = useCallback((newItems: string[]) => {
+    setIngredients(newItems.map((i) => i.trim().toLowerCase()).filter(Boolean));
   }, []);
 
   return {
@@ -81,5 +84,6 @@ export function usePantry(initialIngredients: string[] = []) {
     removeIngredient,
     clearPantry,
     addMultiple,
+    setPantry,
   };
 }

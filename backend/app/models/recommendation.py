@@ -37,6 +37,14 @@ class PantryRequest(BaseModel):
         default=None,
         description="Optional structured pantry item details including expiry dates and risk levels.",
     )
+    allergens: Optional[List[str]] = Field(
+        default=None,
+        description="List of user allergen ingredients to strictly lock/exclude (e.g. ['gluten', 'shrimp', 'potatoes']).",
+    )
+    query_text: Optional[str] = Field(
+        default=None,
+        description="Optional free-text search query or dish name to steer recommendations.",
+    )
 
     @field_validator("pantry_ingredients")
     @classmethod
@@ -132,6 +140,12 @@ class RecipeRecommendationItem(BaseModel):
     ims: float
     pus: float
     recommendation_score: float
+
+    image_url: Optional[str] = None
+    safety_status: Optional[str] = "SAFE"
+    safety_reasons: List[str] = Field(default_factory=list)
+    estimated_missing_cost: float = 0.0
+    food_waste_score: float = 0.0
 
     why_this_recipe: Optional[str] = None
     explanation: str

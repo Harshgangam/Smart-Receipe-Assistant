@@ -15,7 +15,7 @@ describe('Pantry Management Components', () => {
     fireEvent.change(input, { target: { value: 'garlic' } });
     fireEvent.click(submitBtn);
 
-    expect(handleAdd).toHaveBeenCalledWith('garlic');
+    expect(handleAdd).toHaveBeenCalledWith('garlic', 7);
     expect(input).toHaveValue('');
   });
 

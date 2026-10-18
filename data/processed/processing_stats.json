@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-08-29T01:06:43.874462",
+  "execution_time_seconds": 315.39,
+  "chunk_size": 50000,
+  "input": {
+    "path": "C:\\Users\\sward\\Downloads\\archive\\RecipeNLG_dataset.csv",
+    "size_bytes": 2294981083,
+    "size_formatted": "2.14 GB",
+    "total_raw_rows_read": 2231142
+  },
+  "output": {
+    "parquet_path": "C:\\Users\\sward\\AI-Powered-Pantry-Recipe-Assistant\\data\\processed\\recipes.parquet",
+    "parquet_size_bytes": 997222404,
+    "parquet_size_formatted": "951.03 MB",
+    "sqlite_path": "C:\\Users\\sward\\AI-Powered-Pantry-Recipe-Assistant\\data\\processed\\ingredient_index.sqlite",
+    "sqlite_size_bytes": 902856704,
+    "sqlite_size_formatted": "861.03 MB",
+    "malformed_log_path": "C:\\Users\\sward\\AI-Powered-Pantry-Recipe-Assistant\\data\\logs\\malformed_rows.log"
+  },
+  "records": {
+    "valid_recipes": 2230559,
+    "malformed_recipes": 583,
+    "duplicate_ids": 0,
+    "malformed_breakdown": {
+      "NER validation error: Empty NER list after normalization": 580,
+      "Empty title": 3
+    },
+    "sources_distribution": {
+      "Gathered": 1642753,
+      "Recipes1M": 587806
+    }
+  },
+  "index": {
+    "indexed_recipes": 2230559,
+    "unique_ingredients": 198385,
+    "ingredient_recipe_links": 18419714
+  }
+}

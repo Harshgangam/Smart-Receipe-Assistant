@@ -129,7 +129,7 @@ def synthetic_engine(tmp_path):
             ["Cook sauce and pasta", "Serve hot."],
             ["Bake pasta with cheese", "Brown top."],
             ["Cook chicken with curry", "Serve over rice."],
-            ["Chop and toss together."],
+            ["Chop tomatoes and onions finely into bite-sized cubes.", "Toss together in a salad bowl and dress with vinegar and oil."],
         ],
         "link": ["http://ex.com/1", "http://ex.com/2", "http://ex.com/3", "http://ex.com/4"],
         "source": ["Gathered", "Gathered", "Recipes1M", "Gathered"],

@@ -3,7 +3,9 @@ from typing import Dict, List, Set, Tuple
 # Supported Cuisines Taxonomy
 SUPPORTED_CUISINES: List[str] = [
     "American",
+    "Asian",
     "Chinese",
+    "Dessert",
     "French",
     "Indian",
     "Italian",
@@ -12,8 +14,10 @@ SUPPORTED_CUISINES: List[str] = [
     "Mediterranean",
     "Mexican",
     "Middle Eastern",
+    "Soup",
     "Thai",
 ]
+
 
 # Cuisine Title Keywords: High-confidence evidence when appearing in recipe titles
 CUISINE_TITLE_KEYWORDS: Dict[str, List[str]] = {
