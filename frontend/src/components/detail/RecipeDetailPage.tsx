@@ -214,8 +214,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   };
 
   const handleCookRecipe = () => {
-    if (onCooked) onCooked(recipe.ner);
+    if (hasCooked) return; // drop duplicate calls (e.g. StrictMode double-invoke)
     setHasCooked(true);
+    if (onCooked) onCooked(recipe.ner);
   };
 
   const totalSteps = recipe.directions?.length || 0;

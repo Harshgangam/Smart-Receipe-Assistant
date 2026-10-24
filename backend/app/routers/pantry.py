@@ -160,6 +160,16 @@ def delete_pantry_item(item_id: str):
     return None
 
 
+@router.delete("/items", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/clear", status_code=status.HTTP_204_NO_CONTENT)
+def clear_all_pantry_items():
+    """
+    Clear all ingredients from the user's pantry.
+    """
+    pantry_store.clear_all()
+    return None
+
+
 @router.post("/cook")
 def record_cooking_feedback(req: PantryCookRequest):
     """

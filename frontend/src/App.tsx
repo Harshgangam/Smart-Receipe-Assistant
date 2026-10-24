@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, LayoutDashboard, ShoppingBag, UtensilsCrossed, LineChart, Sparkles, ShoppingCart } from 'lucide-react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
@@ -26,7 +26,7 @@ import { FloatingFoodStage, FloatingFoodItem } from './components/common/Floatin
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'pantry' | 'recipes' | 'sandbox' | 'shopping' | 'analytics'>('dashboard');
 
-  const { ingredients, addIngredient, removeIngredient, clearPantry, addMultiple, setPantry } = usePantry([]);
+  const { ingredients, setIngredients, addIngredient, removeIngredient, clearPantry, addMultiple, setPantry } = usePantry([]);
 
   const preferences = usePreferences();
   const { data, loading, error, search } = useRecommendations();
@@ -35,7 +35,12 @@ export const App: React.FC = () => {
   const [pantryRefreshKey, setPantryRefreshKey] = useState(0);
   const [inspirationFood, setInspirationFood] = useState<string | null>(null);
 
+  // Guard against React StrictMode double-invocation: prevents cookRecipe from
+  // being called twice (which would increment analytics count by 2 instead of 1).
+  const cookedInFlight = useRef(false);
+
   const handleSelectRecipe = (recipe: RecipeRecommendationItem, overridePantry?: string[]) => {
+    cookedInFlight.current = false; // reset lock for each new recipe
     setDetailPantryOverride(overridePantry || null);
     setSelectedRecipe(recipe);
   };
@@ -107,6 +112,9 @@ export const App: React.FC = () => {
             window.location.hash = activeTab;
           }}
           onCooked={async (usedNer: string[]) => {
+            // Prevent double-fire from React StrictMode or any accidental double-click
+            if (cookedInFlight.current) return;
+            cookedInFlight.current = true;
             try {
               if (selectedRecipe) {
                 await cookRecipe(selectedRecipe.recipe_id, selectedRecipe.title, usedNer);
@@ -174,7 +182,14 @@ export const App: React.FC = () => {
           </div>
 
           {/* Main Tab Views */}
-          {activeTab === 'pantry' && <PantryManagement key={pantryRefreshKey} />}
+          {activeTab === 'pantry' && (
+            <PantryManagement
+              key={pantryRefreshKey}
+              onPantryChange={(updatedNames) => {
+                setIngredients(updatedNames.map((n) => n.toLowerCase().trim()));
+              }}
+            />
+          )}
 
           {activeTab === 'sandbox' && (
             <LeftoverSandbox
@@ -202,13 +217,27 @@ export const App: React.FC = () => {
                     <h2 className="section-title">Your Kitchen Pantry</h2>
                     <span className="section-badge">{ingredients.length} items</span>
                   </div>
-                  <PantryInput onAdd={addIngredient} />
+                  <PantryInput
+                    onAdd={(rawItem, expiryDays) => {
+                      const added = addIngredient(rawItem, expiryDays);
+                      if (added) {
+                        setPantryRefreshKey((k) => k + 1);
+                      }
+                      return added;
+                    }}
+                  />
                 </div>
 
                 <PantryTagList
                   ingredients={ingredients}
-                  onRemove={removeIngredient}
-                  onClear={clearPantry}
+                  onRemove={(item) => {
+                    removeIngredient(item);
+                    setPantryRefreshKey((k) => k + 1);
+                  }}
+                  onClear={() => {
+                    clearPantry();
+                    setPantryRefreshKey((k) => k + 1);
+                  }}
                 />
 
                 <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '1.5rem' }}>

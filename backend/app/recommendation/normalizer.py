@@ -1,5 +1,5 @@
 import re
-from typing import List, Set, Tuple
+from typing import Dict, List, Set, Tuple
 
 # Words ending in 's' that are singular and must not have trailing 's' removed
 PROTECTED_SINGULARS: Set[str] = {

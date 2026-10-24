@@ -141,6 +141,21 @@ export async function deletePantryItem(itemId: string): Promise<void> {
   await fetchApi(`/api/pantry/items/${itemId}`, { method: 'DELETE' });
 }
 
+export async function deletePantryItemByName(name: string): Promise<void> {
+  try {
+    const items = await fetchPantryItems();
+    const cleanName = name.toLowerCase().trim();
+    const targets = items.filter(
+      (item) => item.name.toLowerCase().trim() === cleanName
+    );
+    for (const target of targets) {
+      await deletePantryItem(target.id);
+    }
+  } catch (err) {
+    console.error('Failed to delete item from backend pantry:', err);
+  }
+}
+
 export async function cookRecipe(recipeId: number, title: string, ner: string[]): Promise<any> {
   const response = await fetchApi('/api/pantry/cook', {
     method: 'POST',

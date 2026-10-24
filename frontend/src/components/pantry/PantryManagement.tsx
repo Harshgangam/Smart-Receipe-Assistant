@@ -39,7 +39,7 @@ export const PantryManagement: React.FC<PantryManagementProps> = ({ onPantryChan
     const data = await fetchPantryItems();
     setItems(data);
     setLoading(false);
-    if (onPantryChange && data.length > 0) {
+    if (onPantryChange) {
       onPantryChange(data.map(i => i.name));
     }
   };

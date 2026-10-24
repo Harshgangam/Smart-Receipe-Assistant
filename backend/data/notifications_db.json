@@ -1,5 +1,40 @@
 [
   {
+    "id": "n_1792850912524",
+    "message": "You just cooked 'Do-It-Yourself Oven Sun-Dried Tomatoes'! Automatically utilized 1 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-24 19:38"
+  },
+  {
+    "id": "n_1792849126336",
+    "message": "You just cooked 'Green Beans and Tomatoes Italiano'!",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-24 19:08"
+  },
+  {
+    "id": "n_1792848969531",
+    "message": "You just cooked 'Fresh Tomato & Herb Bruschetta'! Automatically utilized 2 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-24 19:06"
+  },
+  {
+    "id": "n_1792848945881",
+    "message": "You just cooked 'Do-It-Yourself Oven Sun-Dried Tomatoes'! Automatically utilized 2 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-24 19:05"
+  },
+  {
+    "id": "n_1792848910141",
+    "message": "Your banana has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-24 19:05"
+  },
+  {
     "id": "n_1792644714681",
     "message": "You just cooked 'Summer Cucumber Salad'! Automatically utilized 4 ingredients from your pantry.",
     "type": "cooked",

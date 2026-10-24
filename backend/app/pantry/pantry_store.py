@@ -224,6 +224,10 @@ class PantryStore:
             return True
         return False
 
+    def clear_all(self):
+        self._items.clear()
+        self._save()
+
     def cook_recipe(self, recipe_ner: List[str], recipe_title: str = "A recipe") -> List[str]:
         """
         Pantry Feedback Loop: deducts recipe ingredients from available pantry items.
