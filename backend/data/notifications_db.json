@@ -1,5 +1,82 @@
 [
   {
+    "id": "n_1792644714681",
+    "message": "You just cooked 'Summer Cucumber Salad'! Automatically utilized 4 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-22 10:21"
+  },
+  {
+    "id": "n_1792633183896",
+    "message": "Your tomatoes has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183891",
+    "message": "Your potato has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183882",
+    "message": "Your ladyfinger has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183876",
+    "message": "Your lady finger has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183869",
+    "message": "Your salt has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183864",
+    "message": "Your curd has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183859",
+    "message": "Your millk has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183853",
+    "message": "Your pomegranante has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183848",
+    "message": "Your pineapple has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
+    "id": "n_1792633183842",
+    "message": "Your mirchi has expired and was automatically removed from your pantry.",
+    "type": "expired",
+    "read": true,
+    "timestamp": "2026-10-22 07:09"
+  },
+  {
     "id": "n_1792255990764",
     "message": "You just cooked 'Peanut Butter Banana Oat Smoothie'! Automatically utilized 3 ingredients from your pantry.",
     "type": "cooked",

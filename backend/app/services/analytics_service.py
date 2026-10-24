@@ -1,4 +1,5 @@
 from typing import Dict, Any, List
+import datetime
 from backend.app.pantry.pantry_store import pantry_store
 
 
@@ -25,7 +26,6 @@ class SustainabilityAnalyticsService:
         notifications = pantry_store.get_notifications()
         recipes_prepared = sum(1 for n in notifications if n.type == "cooked")
 
-        import datetime
         trend_data = []
         today = datetime.datetime.now()
         
@@ -36,9 +36,14 @@ class SustainabilityAnalyticsService:
             daily_rescues[d] = 0
             
         for item in consumed_items:
-            # If it lacks a consumed_date (old data), attribute it to today
-            d = getattr(item, "consumed_date", None) or today.strftime("%Y-%m-%d")
-            if d in daily_rescues:
+            d = getattr(item, "consumed_date", None)
+            if not d and getattr(item, "id", None) and str(item.id).startswith("p_"):
+                try:
+                    ts = int(str(item.id).split("_")[1]) / 1000.0
+                    d = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+                except Exception:
+                    d = None
+            if d and d in daily_rescues:
                 daily_rescues[d] += 1
 
         # Build 7-day trend array (from oldest to today)

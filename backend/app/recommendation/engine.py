@@ -254,6 +254,8 @@ class RecommendationEngine:
                 recipe_title=rec["title"],
                 directions=rec["directions"],
                 dietary_preference=dietary_preference,
+                allergens=allergens,
+                pantry_ingredients=pantry_ingredients,
             )
             sub_explanation = substitution_service.generate_substitution_explanation(substitutions)
 

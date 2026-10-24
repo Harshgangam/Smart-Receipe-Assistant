@@ -31,6 +31,42 @@ except Exception:
 
 # Verified Unsplash culinary photos categorized with high resolution and relatable relevance
 _UNSPLASH_POOLS: Dict[str, List[str]] = {
+    "shake": [
+        "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80",  # Fresh banana mango smoothie jar
+        "https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=800&q=80",  # Creamy vanilla milkshake with whipped cream
+        "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=800&q=80",  # Decadent chocolate banana milkshake
+        "https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=800&q=80",  # Fresh berry fruit smoothie
+        "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=800&q=80",  # Vibrant yellow banana tropical smoothie
+        "https://images.unsplash.com/photo-1553787499-6f9133860278?auto=format&fit=crop&w=800&q=80",  # Pink strawberry banana smoothie glass
+        "https://images.unsplash.com/photo-1610970881699-44a5587cabec?auto=format&fit=crop&w=800&q=80",  # Healthy green fruit smoothie
+        "https://images.unsplash.com/photo-1586985289906-406988974504?auto=format&fit=crop&w=800&q=80",  # Classic ice-cold creamy diner milkshake
+    ],
+    "icecream": [
+        "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=800&q=80",  # Creamy gourmet ice cream scoops
+        "https://images.unsplash.com/photo-1560008511-11c63416e52d?auto=format&fit=crop&w=800&q=80",  # Banana split sundae dessert
+        "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=800&q=80",  # Artisanal waffle cone ice cream
+        "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80",  # Fruit sorbet and gelato bowls
+        "https://images.unsplash.com/photo-1488900128323-21503983a07e?auto=format&fit=crop&w=800&q=80",  # Fresh fruit popsicles
+        "https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=800&q=80",  # Soft serve creamy swirl
+    ],
+    "dessert": [
+        "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80",  # Gourmet plated dessert
+        "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80",  # Creamy pudding custard jar
+        "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",  # Baked sweet pastry treat
+        "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=800&q=80",  # Tiramisu parfait dessert glass
+    ],
+    "fruit": [
+        "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80",  # Fresh ripe yellow bananas
+        "https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&w=800&q=80",  # Vibrant colorful sliced fruit platter
+        "https://images.unsplash.com/photo-1519996529931-28324d5a630e?auto=format&fit=crop&w=800&q=80",  # Fresh tropical fruits
+        "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=800&q=80",  # Fresh mixed berry fruit bowl
+    ],
+    "drink": [
+        "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80",  # Chilled refreshing mocktail glass
+        "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80",  # Freshly squeezed orange citrus juice
+        "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80",  # Iced lemon tea drink
+        "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80",  # Warm artisanal latte cup
+    ],
     "fries": [
         "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80",  # Crispy golden french fries
         "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=800&q=80",  # Seasoned crispy potato wedges
@@ -240,6 +276,26 @@ def _detect_culinary_category(text: str, ner: Optional[List[str]] = None) -> Opt
     t = text.lower()
     ner_joined = " ".join((ner or [])).lower()
     combined = f"{t} {ner_joined}"
+    words = set(re.findall(r"[a-z]+", combined))
+    t_words = set(re.findall(r"[a-z]+", t))
+
+    # Smoothies, Shakes & Frappes (Must use word boundaries to avoid 'classic' matching 'lassi')
+    if any(k in words for k in ["shake", "shakes", "milkshake", "milkshakes", "smoothie", "smoothies", "frappe", "slushie", "lassi"]) or (
+        "milk" in t_words and any(f in t_words for f in ["banana", "strawberry", "chocolate", "vanilla", "berry", "mango"])
+    ):
+        return "shake"
+
+    # Ice Cream & Frozen Treats
+    if any(k in combined for k in ["ice cream", "icecream", "gelato", "sorbet", "sherbet", "popsicle", "sundae", "frozen yogurt"]):
+        return "icecream"
+
+    # Desserts, Puddings & Custards
+    if any(k in t for k in ["dessert", "pudding", "custard", "mousse", "tiramisu", "flan", "parfait"]):
+        return "dessert"
+
+    # Beverages & Drinks
+    if any(k in t for k in ["juice", "lemonade", "cocktail", "mocktail", "cider", "punch", "beverage"]) or (any(k in t for k in ["tea", "coffee", "latte", "soda", "drink"]) and not any(k in t for k in ["meat", "chicken", "beef"])):
+        return "drink"
 
     # Strict high-priority food patterns
     if any(k in t for k in ["soup", "chowder", "bisque", "stew", "chili"]) or any(k in combined for k in ["soup", "chowder", "bisque"]):
@@ -256,7 +312,7 @@ def _detect_culinary_category(text: str, ner: Optional[List[str]] = None) -> Opt
         return "pasta"
     if any(k in combined for k in ["pizza", "calzone", "flatbread"]):
         return "pizza"
-    if any(k in combined for k in ["salad", "slaw"]):
+    if any(k in combined for k in ["salad", "slaw"]) and not any(k in t for k in ["fruit"]):
         return "salad"
     if any(k in combined for k in ["curry", "tikka", "masala", "dal", "paneer", "korma"]):
         return "curry"
@@ -282,6 +338,11 @@ def _detect_culinary_category(text: str, ner: Optional[List[str]] = None) -> Opt
         return "pancake"
     if any(k in combined for k in ["bread", "baguette", "brioche", "roll", "bun"]):
         return "bread"
+
+    # Fresh fruits / fruit-heavy dishes
+    if any(k in t for k in ["banana", "strawberry", "blueberry", "raspberry", "mango", "peach", "fruit salad", "fruit bowl", "fruit platter"]) or (any(k in t for k in ["fruit", "apple"]) and not any(k in t for k in ["pie", "tart", "crisp", "cake", "pork"])):
+        return "fruit"
+
     if any(k in combined for k in ["salmon", "shrimp", "fish", "tuna", "seafood", "clam", "crab", "lobster"]):
         return "seafood"
     if any(k in combined for k in ["chicken", "turkey", "wing", "poultry"]):
@@ -310,9 +371,11 @@ def resolve_recipe_image_url(
     Guarantees semantic relatability and 100% collision-free deduplication across recommendation grids:
     - French fries recipes receive authentic golden french fry photography.
     - Potato recipes receive authentic, appetizing potato photography.
+    - Shakes, smoothies, ice cream and desserts receive authentic, delicious sweet/beverage photography.
     - Corn dishes receive golden sweet corn photography.
     - Fritters receive crispy golden fritter / patty photography.
     - If user selected Vegetarian or Vegan, guarantees strictly vegetarian photography.
+    - Never serves savory meat/curry/taco photos for sweet recipes or beverages.
     - Tracks used_urls across grid cards to eliminate repeated images.
     """
     if used_urls is None:
@@ -337,6 +400,18 @@ def resolve_recipe_image_url(
     if is_veg and category in ("chicken", "beef", "steak", "pork", "seafood", "burger"):
         category = "vegetable"
 
+    SWEET_BEV_CATEGORIES = {
+        "shake", "icecream", "dessert", "fruit", "drink", "cake", "cookie", "pie", "muffin", "pancake"
+    }
+    sweet_or_bev_words = {
+        "shake", "smoothie", "milkshake", "frappe", "ice cream", "icecream", "dessert",
+        "pudding", "custard", "mousse", "parfait", "sorbet", "gelato", "popsicle",
+        "banana", "strawberry", "blueberry", "raspberry", "mango", "peach", "fruit",
+        "cake", "cookie", "pie", "muffin", "pancake", "waffle", "crepe", "juice",
+        "lemonade", "cocktail", "mocktail", "sweet", "chocolate", "vanilla", "honey"
+    }
+    is_sweet_or_bev = (category in SWEET_BEV_CATEGORIES) or any(w in t_lower for w in sweet_or_bev_words)
+
     # Step 2: Search MealDB catalog with strict category & dietary constraints
     title_words = set(re.findall(r"[a-zA-Z]{3,}", t_lower))
     stop_words = {"and", "with", "the", "for", "style", "easy", "best", "homemade", "recipe", "delicious", "classic"}
@@ -348,6 +423,10 @@ def resolve_recipe_image_url(
             meal_name = meal.get("name", "").lower()
             if is_veg and any(mw in meal_name for mw in meat_words):
                 continue
+            if is_sweet_or_bev:
+                # Never match savory or meat recipes from MealDB for sweet/drink dishes
+                if any(mw in meal_name for mw in meat_words) or any(sw in meal_name for sw in ["curry", "soup", "stew", "chowder", "chili", "pasta", "taco", "burger", "pizza"]):
+                    continue
             m_words = set(meal.get("keywords") or re.findall(r"[a-zA-Z]{3,}", meal_name))
 
             # If we know the category (e.g. potato), only consider MealDB photos belonging to that concept!
@@ -363,6 +442,9 @@ def resolve_recipe_image_url(
                 continue
             if category == "chicken" and not any(p in meal_name for p in ["chicken", "poultry"]):
                 continue
+            if category in ("shake", "icecream", "dessert", "drink", "fruit"):
+                if not any(k in meal_name for k in ["smoothie", "shake", "juice", "ice cream", "dessert", "banana", "drink", "fruit", "cream", "sweet", "pudding"]):
+                    continue
 
             overlap = len(meaningful_words.intersection(m_words))
             if overlap >= 2:
@@ -385,7 +467,9 @@ def resolve_recipe_image_url(
 
     # Step 5: Check related adjacent pools before repeating images!
     fallback_categories: List[str] = []
-    if is_veg or category in ("fritter", "corn", "vegetable", "potato", "salad", "soup", "rice"):
+    if is_sweet_or_bev:
+        fallback_categories = ["shake", "icecream", "dessert", "fruit", "drink", "cake", "pancake", "cookie", "muffin", "pie"]
+    elif is_veg or category in ("fritter", "corn", "vegetable", "potato", "salad", "soup", "rice"):
         fallback_categories = ["fritter", "corn", "vegetable", "salad", "potato", "soup", "rice"]
     else:
         fallback_categories = ["general", "vegetable", "salad", "sandwich"]
@@ -400,7 +484,20 @@ def resolve_recipe_image_url(
                     used_urls.add(cand)
                     return cand
 
-    # Step 6: Safe fallback to appetizing general savory food photography (strictly vegetarian if veg preference)
+    # Step 6: Safe fallback to appetizing food photography (sweet/beverage fallback if sweet, strictly vegetarian if veg preference)
+    if is_sweet_or_bev:
+        sweet_fallback_pool = _UNSPLASH_POOLS.get("shake", []) + _UNSPLASH_POOLS.get("dessert", []) + _UNSPLASH_POOLS.get("fruit", [])
+        if sweet_fallback_pool:
+            start_sw = seed % len(sweet_fallback_pool)
+            for i in range(len(sweet_fallback_pool)):
+                cand = sweet_fallback_pool[(start_sw + i) % len(sweet_fallback_pool)]
+                if cand not in used_urls:
+                    used_urls.add(cand)
+                    return cand
+            chosen = sweet_fallback_pool[seed % len(sweet_fallback_pool)]
+            used_urls.add(chosen)
+            return chosen
+
     general_pool = _UNSPLASH_POOLS.get("general", [])
     if general_pool:
         start_gen = seed % len(general_pool)
@@ -412,6 +509,8 @@ def resolve_recipe_image_url(
 
     # Step 7: Exhaustive fallback - scan any photo in _UNSPLASH_POOLS not yet in used_urls
     for cat_name, pool in _UNSPLASH_POOLS.items():
+        if is_sweet_or_bev and cat_name not in SWEET_BEV_CATEGORIES:
+            continue
         if is_veg and cat_name in ("chicken", "beef", "steak", "pork", "seafood", "burger"):
             continue
         for cand in pool:

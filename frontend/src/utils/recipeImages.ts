@@ -18,6 +18,42 @@ interface MealPhoto {
 const photoCatalog: MealPhoto[] = recipePhotosCatalog as MealPhoto[];
 
 const CULINARY_PHOTO_POOLS: Record<string, string[]> = {
+  shake: [
+    'https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80', // Fresh banana mango smoothie jar
+    'https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=800&q=80', // Creamy vanilla milkshake with whipped cream
+    'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=800&q=80', // Decadent chocolate banana milkshake
+    'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=800&q=80', // Fresh berry fruit smoothie
+    'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=800&q=80', // Vibrant yellow banana tropical smoothie
+    'https://images.unsplash.com/photo-1553787499-6f9133860278?auto=format&fit=crop&w=800&q=80', // Pink strawberry banana smoothie glass
+    'https://images.unsplash.com/photo-1610970881699-44a5587cabec?auto=format&fit=crop&w=800&q=80', // Healthy green fruit smoothie
+    'https://images.unsplash.com/photo-1586985289906-406988974504?auto=format&fit=crop&w=800&q=80', // Classic ice-cold creamy diner milkshake
+  ],
+  icecream: [
+    'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=800&q=80', // Creamy gourmet ice cream scoops
+    'https://images.unsplash.com/photo-1560008511-11c63416e52d?auto=format&fit=crop&w=800&q=80', // Banana split sundae dessert
+    'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=800&q=80', // Artisanal waffle cone ice cream
+    'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80', // Fruit sorbet and gelato bowls
+    'https://images.unsplash.com/photo-1488900128323-21503983a07e?auto=format&fit=crop&w=800&q=80', // Fresh fruit popsicles
+    'https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=800&q=80', // Soft serve creamy swirl
+  ],
+  dessert: [
+    'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80', // Gourmet plated dessert
+    'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80', // Creamy pudding custard jar
+    'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80', // Baked sweet pastry treat
+    'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=800&q=80', // Tiramisu parfait dessert glass
+  ],
+  fruit: [
+    'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80', // Fresh ripe yellow bananas
+    'https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&w=800&q=80', // Vibrant colorful sliced fruit platter
+    'https://images.unsplash.com/photo-1519996529931-28324d5a630e?auto=format&fit=crop&w=800&q=80', // Fresh tropical fruits
+    'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=800&q=80', // Fresh mixed berry fruit bowl
+  ],
+  drink: [
+    'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80', // Chilled refreshing mocktail glass
+    'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80', // Freshly squeezed orange citrus juice
+    'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80', // Iced lemon tea drink
+    'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80', // Warm artisanal latte cup
+  ],
   fries: [
     'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80', // Crispy golden french fries
     'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=800&q=80', // Seasoned crispy potato wedges
@@ -127,7 +163,36 @@ function detectCulinaryCategory(text: string, ner?: string[]): string | null {
   const t = text.toLowerCase();
   const nerJoined = (ner || []).join(' ').toLowerCase();
   const combined = `${t} ${nerJoined}`;
+  const words = new Set(combined.match(/[a-z]+/g) || []);
+  const tWords = new Set(t.match(/[a-z]+/g) || []);
 
+  // Smoothies, Shakes & Frappes (Must use word boundary to avoid 'classic' matching 'lassi')
+  if (
+    ['shake', 'shakes', 'milkshake', 'milkshakes', 'smoothie', 'smoothies', 'frappe', 'slushie', 'lassi'].some((k) => words.has(k)) ||
+    (tWords.has('milk') && ['banana', 'strawberry', 'chocolate', 'vanilla', 'berry', 'mango'].some((f) => tWords.has(f)))
+  ) {
+    return 'shake';
+  }
+
+  // Ice Cream & Frozen Treats
+  if (['ice cream', 'icecream', 'gelato', 'sorbet', 'sherbet', 'popsicle', 'sundae', 'frozen yogurt'].some((k) => combined.includes(k))) {
+    return 'icecream';
+  }
+
+  // Desserts, Puddings & Custards
+  if (['dessert', 'pudding', 'custard', 'mousse', 'tiramisu', 'flan', 'parfait'].some((k) => t.includes(k))) {
+    return 'dessert';
+  }
+
+  // Beverages & Drinks
+  if (
+    ['juice', 'lemonade', 'cocktail', 'mocktail', 'cider', 'punch', 'beverage'].some((k) => t.includes(k)) ||
+    (['tea', 'coffee', 'latte', 'soda', 'drink'].some((k) => t.includes(k)) && !['meat', 'chicken', 'beef'].some((k) => t.includes(k)))
+  ) {
+    return 'drink';
+  }
+
+  // Strict high-priority food patterns
   if (combined.includes('french fry') || combined.includes('french fries') || combined.includes('fries') || combined.includes('wedges') || combined.includes('hashbrown')) {
     return 'fries';
   }
@@ -188,6 +253,15 @@ function detectCulinaryCategory(text: string, ner?: string[]): string | null {
   if (combined.includes('pancake') || combined.includes('waffle') || combined.includes('crepe')) {
     return 'pancake';
   }
+
+  // Fresh fruits / fruit dishes
+  if (
+    ['banana', 'strawberry', 'blueberry', 'raspberry', 'mango', 'peach', 'fruit salad', 'fruit bowl'].some((k) => t.includes(k)) ||
+    (['fruit', 'apple'].some((k) => t.includes(k)) && !['pie', 'tart', 'crisp', 'cake', 'pork'].some((k) => t.includes(k)))
+  ) {
+    return 'fruit';
+  }
+
   if (combined.includes('salmon') || combined.includes('shrimp') || combined.includes('fish') || combined.includes('tuna') || combined.includes('seafood') || combined.includes('crab')) {
     return 'seafood';
   }
@@ -208,6 +282,19 @@ function detectCulinaryCategory(text: string, ner?: string[]): string | null {
 }
 
 const globalSessionUsedUrls = new Set<string>();
+
+const SWEET_BEV_CATEGORIES = new Set([
+  'shake',
+  'icecream',
+  'dessert',
+  'fruit',
+  'drink',
+  'cake',
+  'cookie',
+  'pie',
+  'muffin',
+  'pancake',
+]);
 
 export function getRecipeImageUrl(
   recipe: {
@@ -242,6 +329,27 @@ export function getRecipeImageUrl(
 
   // 2. Detect culinary category
   const category = detectCulinaryCategory(fullText, recipe.ner);
+  const isSweetOrBev =
+    (category && SWEET_BEV_CATEGORIES.has(category)) ||
+    [
+      'shake',
+      'smoothie',
+      'milkshake',
+      'frappe',
+      'ice cream',
+      'icecream',
+      'dessert',
+      'pudding',
+      'custard',
+      'mousse',
+      'banana',
+      'strawberry',
+      'blueberry',
+      'fruit',
+      'sweet',
+      'chocolate',
+      'vanilla',
+    ].some((w) => title.includes(w));
 
   // 3. Search MealDB catalog with category restriction
   const candidatePool: string[] = [];
@@ -252,11 +360,21 @@ export function getRecipeImageUrl(
     const matchedMeals = photoCatalog
       .filter((m) => {
         const mName = m.name.toLowerCase();
+        if (isSweetOrBev) {
+          if (['chicken', 'beef', 'pork', 'curry', 'soup', 'stew', 'chowder', 'chili', 'pasta', 'taco', 'burger', 'pizza'].some((sw) => mName.includes(sw))) {
+            return false;
+          }
+        }
         if (category === 'fries' && !mName.includes('fries') && !mName.includes('fry') && !mName.includes('chips') && !mName.includes('wedges')) return false;
         if (category === 'potato' && !mName.includes('potato') && !mName.includes('papas') && !mName.includes('mash')) return false;
         if (category === 'pasta' && !mName.includes('pasta') && !mName.includes('spaghetti') && !mName.includes('lasagna')) return false;
         if (category === 'chicken' && !mName.includes('chicken')) return false;
         if (category === 'pizza' && !mName.includes('pizza')) return false;
+        if (category && ['shake', 'icecream', 'dessert', 'fruit', 'drink'].includes(category)) {
+          if (!['smoothie', 'shake', 'juice', 'ice cream', 'dessert', 'banana', 'drink', 'fruit', 'cream', 'sweet', 'pudding'].some((k) => mName.includes(k))) {
+            return false;
+          }
+        }
         return true;
       })
       .map((m) => {
@@ -293,7 +411,10 @@ export function getRecipeImageUrl(
   }
 
   // 5. Fallback across related pools before repeating
-  const fallbackCategories = ['fritter', 'corn', 'vegetable', 'salad', 'general'];
+  const fallbackCategories = isSweetOrBev
+    ? ['shake', 'icecream', 'dessert', 'fruit', 'drink', 'cake', 'pancake', 'cookie', 'muffin', 'pie']
+    : ['fritter', 'corn', 'vegetable', 'salad', 'general'];
+
   for (const fbCat of fallbackCategories) {
     const pool = CULINARY_PHOTO_POOLS[fbCat];
     if (pool && pool.length > 0) {
@@ -308,7 +429,20 @@ export function getRecipeImageUrl(
     }
   }
 
-  // 6. Safe fallback to appetizing culinary bowl
+  // 6. Safe fallback: never serve savory general dishes to sweet recipes
+  if (isSweetOrBev) {
+    const sweetPool = [
+      ...(CULINARY_PHOTO_POOLS.shake || []),
+      ...(CULINARY_PHOTO_POOLS.dessert || []),
+      ...(CULINARY_PHOTO_POOLS.fruit || []),
+    ];
+    if (sweetPool.length > 0) {
+      const chosen = sweetPool[seed % sweetPool.length];
+      activeUsed.add(chosen);
+      return chosen;
+    }
+  }
+
   const fallbackPool = CULINARY_PHOTO_POOLS.general;
   const chosen = fallbackPool[seed % fallbackPool.length];
   activeUsed.add(chosen);

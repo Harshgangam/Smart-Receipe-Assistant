@@ -319,15 +319,15 @@
     "name": "vinegar",
     "normalized_name": "vinegar",
     "category": "General",
-    "quantity": 1.0,
+    "quantity": 0.0,
     "unit": "pcs",
     "purchase_date": "2026-10-11",
     "expiry_date": "2028-10-10",
     "expiry_days": 730,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
-    "consumed_date": null
+    "status": "consumed",
+    "consumed_date": "2026-10-22"
   },
   "p_1791713198950": {
     "id": "p_1791713198950",
@@ -431,7 +431,7 @@
     "expiry_days": 7,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1791751546728": {
@@ -491,7 +491,7 @@
     "expiry_days": 7,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1791753911884": {
@@ -506,7 +506,7 @@
     "expiry_days": 7,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1791753917864": {
@@ -521,7 +521,7 @@
     "expiry_days": 7,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1791753927255": {
@@ -671,7 +671,7 @@
     "expiry_days": 7,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1791816874536": {
@@ -709,15 +709,15 @@
     "name": "onion",
     "normalized_name": "onion",
     "category": "General",
-    "quantity": 1.0,
+    "quantity": 0.0,
     "unit": "pcs",
     "purchase_date": "2026-10-12",
     "expiry_date": "2026-12-11",
     "expiry_days": 60,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
-    "consumed_date": null
+    "status": "consumed",
+    "consumed_date": "2026-10-22"
   },
   "p_1791824011962": {
     "id": "p_1791824011962",
@@ -761,7 +761,7 @@
     "expiry_days": 7,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1791829493770": {
@@ -881,7 +881,7 @@
     "expiry_days": 3,
     "expiry_risk": "medium",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1792257069909": {
@@ -896,7 +896,7 @@
     "expiry_days": 1,
     "expiry_risk": "high",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1792257100185": {
@@ -911,7 +911,7 @@
     "expiry_days": 1,
     "expiry_risk": "high",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1792267938840": {
@@ -919,15 +919,15 @@
     "name": "oil",
     "normalized_name": "oil",
     "category": "General",
-    "quantity": 1.0,
+    "quantity": 0.0,
     "unit": "pcs",
     "purchase_date": "2026-10-18",
     "expiry_date": "2027-04-16",
     "expiry_days": 180,
     "expiry_risk": "low",
     "storage_location": "pantry",
-    "status": "available",
-    "consumed_date": null
+    "status": "consumed",
+    "consumed_date": "2026-10-22"
   },
   "p_1792271617783": {
     "id": "p_1792271617783",
@@ -986,7 +986,7 @@
     "expiry_days": 3,
     "expiry_risk": "medium",
     "storage_location": "pantry",
-    "status": "available",
+    "status": "expired",
     "consumed_date": null
   },
   "p_1792274155111": {
@@ -999,6 +999,111 @@
     "purchase_date": "2026-10-18",
     "expiry_date": "2027-04-16",
     "expiry_days": 180,
+    "expiry_risk": "low",
+    "storage_location": "pantry",
+    "status": "available",
+    "consumed_date": null
+  },
+  "p_1792633144840": {
+    "id": "p_1792633144840",
+    "name": "chillli",
+    "normalized_name": "chillli",
+    "category": "General",
+    "quantity": 1.0,
+    "unit": "pcs",
+    "purchase_date": "2026-10-22",
+    "expiry_date": "2026-10-25",
+    "expiry_days": 3,
+    "expiry_risk": "medium",
+    "storage_location": "pantry",
+    "status": "available",
+    "consumed_date": null
+  },
+  "p_1792633152469": {
+    "id": "p_1792633152469",
+    "name": "flour",
+    "normalized_name": "flour",
+    "category": "General",
+    "quantity": 1.0,
+    "unit": "pcs",
+    "purchase_date": "2026-10-22",
+    "expiry_date": "2027-04-20",
+    "expiry_days": 180,
+    "expiry_risk": "low",
+    "storage_location": "pantry",
+    "status": "available",
+    "consumed_date": null
+  },
+  "p_1792633504771": {
+    "id": "p_1792633504771",
+    "name": "onions",
+    "normalized_name": "onions",
+    "category": "General",
+    "quantity": 0.0,
+    "unit": "pcs",
+    "purchase_date": "2026-10-22",
+    "expiry_date": "2026-12-21",
+    "expiry_days": 60,
+    "expiry_risk": "low",
+    "storage_location": "pantry",
+    "status": "consumed",
+    "consumed_date": "2026-10-22"
+  },
+  "p_1792633681038": {
+    "id": "p_1792633681038",
+    "name": "tomatoes",
+    "normalized_name": "tomatoes",
+    "category": "General",
+    "quantity": 1.0,
+    "unit": "pcs",
+    "purchase_date": "2026-10-22",
+    "expiry_date": "2026-10-29",
+    "expiry_days": 7,
+    "expiry_risk": "low",
+    "storage_location": "pantry",
+    "status": "available",
+    "consumed_date": null
+  },
+  "p_1792637757935": {
+    "id": "p_1792637757935",
+    "name": "banana",
+    "normalized_name": "banana",
+    "category": "General",
+    "quantity": 1.0,
+    "unit": "pcs",
+    "purchase_date": "2026-10-22",
+    "expiry_date": "2026-10-23",
+    "expiry_days": 1,
+    "expiry_risk": "high",
+    "storage_location": "pantry",
+    "status": "available",
+    "consumed_date": null
+  },
+  "p_1792637770857": {
+    "id": "p_1792637770857",
+    "name": "milk",
+    "normalized_name": "milk",
+    "category": "General",
+    "quantity": 1.0,
+    "unit": "pcs",
+    "purchase_date": "2026-10-22",
+    "expiry_date": "2026-11-05",
+    "expiry_days": 14,
+    "expiry_risk": "low",
+    "storage_location": "pantry",
+    "status": "available",
+    "consumed_date": null
+  },
+  "p_1792637789475": {
+    "id": "p_1792637789475",
+    "name": "cream",
+    "normalized_name": "cream",
+    "category": "General",
+    "quantity": 1.0,
+    "unit": "pcs",
+    "purchase_date": "2026-10-22",
+    "expiry_date": "2026-11-21",
+    "expiry_days": 30,
     "expiry_risk": "low",
     "storage_location": "pantry",
     "status": "available",

@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, TrendingUp, ShieldCheck, Leaf, DollarSign, Award } from 'lucide-react';
+import { Sparkles, TrendingUp, ShieldCheck, Leaf, DollarSign, Award, RefreshCw, AlertCircle } from 'lucide-react';
 import { SustainabilityMetricsResponse } from '../../types/api';
 import { fetchSustainabilityAnalytics } from '../../services/api';
 
 export const SustainabilityDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<SustainabilityMetricsResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadMetrics() {
+  const loadMetrics = async () => {
+    try {
       setLoading(true);
+      setError(null);
       const data = await fetchSustainabilityAnalytics();
       setMetrics(data);
+    } catch (err: any) {
+      console.error('Failed to load sustainability metrics:', err);
+      setError('Unable to load sustainability analytics right now. Please ensure the backend is running.');
+    } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadMetrics();
   }, []);
 
@@ -26,7 +35,37 @@ export const SustainabilityDashboard: React.FC = () => {
     );
   }
 
-  if (!metrics) return null;
+  if (error || !metrics) {
+    return (
+      <div className="cute-sustainability-panel" style={{ textAlign: 'center', padding: '2.5rem' }}>
+        <div style={{ display: 'inline-flex', padding: '0.75rem', borderRadius: '50%', background: '#FEE2E2', color: '#DC2626', marginBottom: '1rem' }}>
+          <AlertCircle size={28} />
+        </div>
+        <h3 style={{ color: '#0F172A', fontWeight: 700, marginBottom: '0.5rem' }}>Analytics Unavailable</h3>
+        <p style={{ color: '#64748B', maxWidth: '420px', margin: '0 auto 1.5rem auto', fontSize: '0.9rem' }}>
+          {error || 'No sustainability data found. Prepare your first meal to log food rescue impact!'}
+        </p>
+        <button
+          onClick={loadMetrics}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.6rem 1.2rem',
+            background: '#10B981',
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: '9999px',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          <RefreshCw size={16} />
+          <span>Retry Loading</span>
+        </button>
+      </div>
+    );
+  }
 
   const avoidedKg = metrics.estimated_food_waste_avoided_kg || (metrics.high_risk_rescued_count * 0.45);
   const estimatedCostSaved = (avoidedKg * 7.5).toFixed(2);
@@ -60,7 +99,7 @@ export const SustainabilityDashboard: React.FC = () => {
 
       {/* Cheerful Status Summary Banner */}
       <div className="cute-status-banner">
-        <div className="cute-banner-icon-bubble">🍃</div>
+        <div className="cute-banner-icon-bubble">✨</div>
         <div className="cute-banner-content">
           <strong>Pantry Health Status</strong>
           <p>{metrics.status_summary}</p>
@@ -72,7 +111,7 @@ export const SustainabilityDashboard: React.FC = () => {
         {/* Card 1: Rescued Items */}
         <div className="cute-metric-card card-peach">
           <div className="card-top-row">
-            <span className="card-emoji">🥑</span>
+            <span className="card-emoji">🥬</span>
             <span className="card-mini-badge badge-peach">Saved from Waste</span>
           </div>
           <div className="card-number text-peach">{metrics.high_risk_rescued_count}</div>
@@ -83,7 +122,7 @@ export const SustainabilityDashboard: React.FC = () => {
         {/* Card 2: Pantry Utilization */}
         <div className="cute-metric-card card-sky">
           <div className="card-top-row">
-            <span className="card-emoji">🎯</span>
+            <span className="card-emoji">⚡</span>
             <span className="card-mini-badge badge-sky">Efficiency</span>
           </div>
           <div className="card-number text-sky">{metrics.pantry_utilization_rate}%</div>
@@ -94,7 +133,7 @@ export const SustainabilityDashboard: React.FC = () => {
         {/* Card 3: Food Waste Avoided */}
         <div className="cute-metric-card card-emerald">
           <div className="card-top-row">
-            <span className="card-emoji">⚖️</span>
+            <span className="card-emoji">📉</span>
             <span className="card-mini-badge badge-emerald">Landfill Diverted</span>
           </div>
           <div className="card-number text-emerald">{avoidedKg.toFixed(1)} <span style={{ fontSize: '1rem', fontWeight: 600 }}>kg</span></div>
@@ -105,7 +144,7 @@ export const SustainabilityDashboard: React.FC = () => {
         {/* Card 4: Recipes Prepared */}
         <div className="cute-metric-card card-lavender">
           <div className="card-top-row">
-            <span className="card-emoji">👨‍🍳</span>
+            <span className="card-emoji">🍳</span>
             <span className="card-mini-badge badge-lavender">Home Cooked</span>
           </div>
           <div className="card-number text-lavender">{metrics.recipes_prepared_count}</div>
@@ -144,7 +183,8 @@ export const SustainabilityDashboard: React.FC = () => {
           {metrics.sustainability_trend && metrics.sustainability_trend.length > 0 ? (
             metrics.sustainability_trend.map((dayData, idx) => {
               const maxItems = Math.max(1, ...metrics.sustainability_trend.map(d => d.rescued_items));
-              const heightPct = Math.max(18, Math.min(100, (dayData.rescued_items / maxItems) * 88));
+              // When rescued_items is 0, heightPct is strictly 0% so empty days do not render fake green pill fills
+              const heightPct = dayData.rescued_items === 0 ? 0 : Math.max(18, Math.min(100, (dayData.rescued_items / maxItems) * 88));
 
               return (
                 <div key={idx} className="cute-chart-col">
@@ -154,7 +194,7 @@ export const SustainabilityDashboard: React.FC = () => {
                   <div className="cute-bar-track">
                     <div
                       className="cute-bar-fill"
-                      style={{ height: `${heightPct}%` }}
+                      style={{ height: `${heightPct}%`, display: dayData.rescued_items === 0 ? 'none' : 'block' }}
                       title={`${dayData.day}: ${dayData.rescued_items} items rescued`}
                     />
                   </div>

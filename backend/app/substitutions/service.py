@@ -1,9 +1,18 @@
+"""
+backend/app/substitutions/service.py
+
+Dynamic Smart Substitution Service integrating NetworkX knowledge graph search,
+pantry-aware candidate ranking, deterministic allergen and dietary safety hard-locks,
+multi-ingredient combinations, and honest handling of unindexed ingredients.
+"""
+
 import logging
 import re
 from typing import Dict, List, Optional, Set, Tuple
 
 from backend.app.safety.allergen_guard import ALLERGEN_TAXONOMY
 from backend.app.substitutions.context import detect_culinary_context
+from backend.app.substitutions.graph import substitution_graph
 from backend.app.substitutions.knowledge_base import SUBSTITUTION_DATABASE
 from backend.app.substitutions.models import SubstitutionCandidate, SubstitutionEntry
 from backend.app.substitutions.normalizer import resolve_canonical_ingredient
@@ -25,14 +34,18 @@ OPTIONAL_GARNISH_INGREDIENTS: Set[str] = {
 
 class SubstitutionService:
     """
-    Intelligent substitution engine providing context-aware, dietary-filtered,
-    and allergen-hardlocked ingredient alternatives for missing recipe ingredients.
-    Features independent per-ingredient evaluation, canonical normalization,
-    and controlled fallback with omission/shopping guidance.
+    Intelligent substitution engine combining:
+      1. NetworkX Dynamic Smart Substitution Graph (SQLite-backed).
+      2. Multi-ingredient functional combinations (e.g., baking powder -> baking soda + yogurt/acid).
+      3. Role-based & attribute graph traversal for unindexed ingredients.
+      4. Deterministic Allergen & Dietary Safety Hard-Locks.
+      5. Pantry-aware scoring and prioritization.
+      6. Honest reporting when no reliable substitute exists (zero fabrication).
     """
 
     def __init__(self, database: Optional[List[SubstitutionEntry]] = None):
         self.database = database or SUBSTITUTION_DATABASE
+        self.graph = substitution_graph
         self._index: Dict[str, List[SubstitutionEntry]] = {}
         for entry in self.database:
             key = entry.original_ingredient.lower().strip()
@@ -75,64 +88,19 @@ class SubstitutionService:
     def _check_safety(
         self,
         candidate_name: str,
-        entry: Optional[SubstitutionEntry],
+        entry: Optional[SubstitutionEntry] = None,
         dietary_preference: Optional[str] = None,
         allergens: Optional[List[str]] = None,
     ) -> Tuple[bool, str]:
         """
         Deterministic Allergen and Dietary Hard-Lock Filter.
         Guarantees that neither knowledge base entries nor fallbacks bypass safety constraints.
-        Returns: (is_safe, safety_status) -> where safety_status is 'SAFE' | 'BLOCKED'
         """
-        cand_lower = candidate_name.lower().strip()
-        user_diet = (dietary_preference or "").lower().strip()
-        user_algs = [a.lower().strip() for a in (allergens or [])]
-
-        # 1. Check Allergens
-        if user_algs:
-            # Check entry explicit allergens list
-            if entry and entry.allergens:
-                for alg in user_algs:
-                    if alg in [a.lower() for a in entry.allergens]:
-                        logger.info(f"[Safety Hard-Lock] Rejected '{candidate_name}': Contains allergen '{alg}'")
-                        return False, "BLOCKED"
-
-            # Check allergen taxonomy keywords against candidate name, respecting plant-based dairy alternatives
-            plant_milk_cheese = ["soy milk", "almond milk", "oat milk", "coconut milk", "plant-based", "vegan", "cashew"]
-            for alg in user_algs:
-                if alg == "dairy" and any(p in cand_lower for p in plant_milk_cheese):
-                    continue
-                tax_keywords = ALLERGEN_TAXONOMY.get(alg, [alg])
-                for kw in tax_keywords:
-                    if kw in cand_lower:
-                        logger.info(f"[Safety Hard-Lock] Rejected '{candidate_name}': Matches allergen '{alg}' keyword '{kw}'")
-                        return False, "BLOCKED"
-
-        # 2. Check Dietary Restrictions
-        if user_diet == "vegan":
-            if entry and "vegan" not in entry.dietary_compatibility:
-                logger.info(f"[Safety Hard-Lock] Rejected '{candidate_name}': Not compatible with vegan diet")
-                return False, "BLOCKED"
-            # If candidate is explicitly labeled plant-based or known plant milk, it is vegan
-            plant_exceptions = ["soy milk", "almond milk", "oat milk", "coconut milk", "vegan", "plant-based", "cashew mozzarella"]
-            if not any(pe in cand_lower for pe in plant_exceptions):
-                non_vegan = ["milk", "butter", "cheese", "egg", "cream", "yogurt", "paneer", "honey", "pork", "beef", "chicken", "meat", "salami", "chorizo", "pepperoni", "gelatin", "whey"]
-                if any(nv in cand_lower for nv in non_vegan):
-                    logger.info(f"[Safety Hard-Lock] Rejected '{candidate_name}': Violates vegan restriction")
-                    return False, "BLOCKED"
-
-        elif user_diet == "vegetarian":
-            if entry and ("vegetarian" not in entry.dietary_compatibility and "vegan" not in entry.dietary_compatibility):
-                logger.info(f"[Safety Hard-Lock] Rejected '{candidate_name}': Not compatible with vegetarian diet")
-                return False, "BLOCKED"
-            plant_meat_exceptions = ["tempeh", "tofu", "vegan", "plant-based", "seitan", "lentil", "lentils"]
-            if not any(pe in cand_lower for pe in plant_meat_exceptions):
-                meat_keywords = ["chicken", "beef", "pork", "lamb", "bacon", "salmon", "shrimp", "fish", "turkey", "salami", "chorizo", "pepperoni", "prosciutto", "pancetta"]
-                if any(m in cand_lower for m in meat_keywords):
-                    logger.info(f"[Safety Hard-Lock] Rejected '{candidate_name}': Violates vegetarian restriction")
-                    return False, "BLOCKED"
-
-        return True, "SAFE"
+        return self.graph.evaluate_safety(
+            candidate_name=candidate_name,
+            user_diet=dietary_preference,
+            user_allergens=allergens,
+        )
 
     def get_substitutions_for_ingredient(
         self,
@@ -141,73 +109,108 @@ class SubstitutionService:
         dietary_preference: Optional[str] = None,
         allergens: Optional[List[str]] = None,
         max_candidates: int = 2,
+        pantry_items: Optional[List[str]] = None,
     ) -> List[SubstitutionCandidate]:
         """
         Finds appropriate substitution candidates for a single missing ingredient independently.
-        Applies canonical normalization, context prioritization, and deterministic safety hard-locks.
+        Queries the Dynamic Smart Substitution Graph first, evaluating verified edges,
+        multi-ingredient combinations, pantry availability, and functional roles.
         """
-        raw_entries = self.lookup_raw_entries(missing_ingredient)
-        if not raw_entries:
-            logger.debug(f"[SubstitutionService] No database/graph entry for '{missing_ingredient}'.")
+        if not missing_ingredient or not missing_ingredient.strip():
             return []
 
-        # Filter strictly with hard-lock safety
-        compatible_entries: List[SubstitutionEntry] = []
-        for entry in raw_entries:
-            is_safe, _ = self._check_safety(
-                candidate_name=entry.substitute,
-                entry=entry,
-                dietary_preference=dietary_preference,
-                allergens=allergens,
-            )
-            if is_safe:
-                compatible_entries.append(entry)
+        canonical = resolve_canonical_ingredient(missing_ingredient)
 
-        if not compatible_entries:
-            logger.info(f"[SubstitutionService] All candidates for '{missing_ingredient}' filtered out by safety hard-lock.")
-            return []
-
-        # Sort/Prioritize by context match, then confidence
-        conf_weights = {"high": 3, "medium": 2, "low": 1}
-
-        def score_entry(e: SubstitutionEntry):
-            context_match = 1 if (context in e.use_cases or "general" in e.use_cases) else 0
-            exact_context_match = 2 if context in e.use_cases else 0
-            conf_score = conf_weights.get(e.confidence, 1)
-            return (exact_context_match, context_match, conf_score)
-
-        sorted_entries = sorted(compatible_entries, key=score_entry, reverse=True)
-
-        results: List[SubstitutionCandidate] = []
-        seen_substitutes = set()
-
-        for entry in sorted_entries[:max_candidates]:
-            if entry.substitute in seen_substitutes:
-                continue
-            seen_substitutes.add(entry.substitute)
-
-            canonical = resolve_canonical_ingredient(missing_ingredient)
-            can_omit = canonical in OPTIONAL_GARNISH_INGREDIENTS
-
-            results.append(
+        # 1. Check if the missing item is a safe optional garnish
+        if canonical in OPTIONAL_GARNISH_INGREDIENTS:
+            # Garnish can be omitted without altering core dish structure
+            return [
                 SubstitutionCandidate(
                     missing_ingredient=missing_ingredient,
-                    substitute=entry.substitute,
-                    ratio=entry.ratio,
-                    confidence=entry.confidence,
-                    substitution_type=entry.substitution_type,
-                    reason=entry.reason,
-                    use_case=context if context != "general" else (entry.use_cases[0] if entry.use_cases else "general"),
+                    substitute="Optional omission",
+                    ratio=None,
+                    confidence="medium",
+                    substitution_type="optional_omission",
+                    reason=f"{missing_ingredient.capitalize()} serves primarily as a decorative garnish or accent and can be omitted without compromising the core dish structure.",
+                    use_case=context,
                     dietary_compatible=True,
                     safety_status="SAFE",
-                    notes=entry.notes,
-                    source=entry.source,
-                    can_omit=can_omit,
-                    shopping_suggestion=f"Add {missing_ingredient} to your grocery list if preferred over {entry.substitute}.",
+                    can_omit=True,
+                    notes="Omit without flavor balance issues.",
+                    source="Culinary Institute of America",
+                    shopping_suggestion=f"Add {missing_ingredient} to shopping list for full presentation.",
                 )
-            )
+            ]
 
-        return results
+        # 2. Query the Dynamic Smart Substitution Graph
+        graph_candidates = self.graph.find_candidates_for_ingredient(
+            missing_ingredient=missing_ingredient,
+            pantry_items=pantry_items,
+            context=context,
+            dietary_preference=dietary_preference,
+            user_allergens=allergens,
+            max_candidates=max_candidates,
+        )
+
+        if graph_candidates:
+            return graph_candidates
+
+        # 3. Fallback to raw database index lookup (for custom database instances or unlinked items)
+        raw_entries = self.lookup_raw_entries(missing_ingredient)
+        if raw_entries:
+            compatible_entries: List[SubstitutionEntry] = []
+            for entry in raw_entries:
+                is_safe, _ = self._check_safety(
+                    candidate_name=entry.substitute,
+                    entry=entry,
+                    dietary_preference=dietary_preference,
+                    allergens=allergens,
+                )
+                if is_safe:
+                    compatible_entries.append(entry)
+
+            if compatible_entries:
+                conf_weights = {"high": 3, "medium": 2, "low": 1}
+                sorted_entries = sorted(
+                    compatible_entries,
+                    key=lambda e: (
+                        2 if context in e.use_cases else (1 if "general" in e.use_cases else 0),
+                        conf_weights.get(e.confidence, 1),
+                    ),
+                    reverse=True,
+                )
+
+                results: List[SubstitutionCandidate] = []
+                seen = set()
+                for entry in sorted_entries[:max_candidates]:
+                    if entry.substitute in seen:
+                        continue
+                    seen.add(entry.substitute)
+                    results.append(
+                        SubstitutionCandidate(
+                            missing_ingredient=missing_ingredient,
+                            substitute=entry.substitute,
+                            ratio=entry.ratio,
+                            confidence=entry.confidence,
+                            substitution_type=entry.substitution_type,
+                            reason=entry.reason,
+                            use_case=context if context != "general" else (entry.use_cases[0] if entry.use_cases else "general"),
+                            dietary_compatible=True,
+                            safety_status="SAFE",
+                            notes=entry.notes,
+                            source=entry.source,
+                            can_omit=False,
+                            shopping_suggestion=f"Add {missing_ingredient} to your grocery list if preferred over {entry.substitute}.",
+                        )
+                    )
+                return results
+
+        # 4. Unknown ingredient with zero validated evidence -> return empty list (no fabrication)
+        logger.info(
+            f"[SubstitutionService] Evaluated missing item '{missing_ingredient}' (canonical: '{canonical}') independently: "
+            f"No reliable validated substitute identified. Preserving integrity without fabrication."
+        )
+        return []
 
     def get_substitutions_for_recipe(
         self,
@@ -217,13 +220,23 @@ class SubstitutionService:
         dietary_preference: Optional[str] = None,
         allergens: Optional[List[str]] = None,
         max_substitutes_per_item: int = 1,
+        pantry_ingredients: Optional[List[str]] = None,
     ) -> List[SubstitutionCandidate]:
         """
-        Extracts substitution candidates for all missing ingredients in a recommended recipe.
-        Evaluates each missing ingredient independently.
+        Extracts substitution candidates for all missing ingredients in a recipe.
+        Evaluates each missing ingredient independently via dynamic graph search.
         """
         if not missing_ingredients:
             return []
+
+        # If pantry_ingredients not provided, try to fetch current active pantry
+        if pantry_ingredients is None:
+            try:
+                from backend.app.pantry.pantry_store import pantry_store
+                pantry_items = pantry_store.get_all(status="available")
+                pantry_ingredients = [item.name for item in pantry_items]
+            except Exception:
+                pantry_ingredients = []
 
         context = detect_culinary_context(recipe_title, directions or [])
         all_candidates: List[SubstitutionCandidate] = []
@@ -235,39 +248,11 @@ class SubstitutionService:
                 dietary_preference=dietary_preference,
                 allergens=allergens,
                 max_candidates=max_substitutes_per_item,
+                pantry_items=pantry_ingredients,
             )
 
             if item_subs:
                 all_candidates.extend(item_subs)
-            else:
-                # Controlled context-aware fallback & omission check
-                canonical = resolve_canonical_ingredient(missing_item)
-                can_omit = canonical in OPTIONAL_GARNISH_INGREDIENTS
-                is_pivotal = canonical in STRUCTURAL_PIVOTAL_INGREDIENTS
-
-                if can_omit:
-                    all_candidates.append(
-                        SubstitutionCandidate(
-                            missing_ingredient=missing_item,
-                            substitute="Optional omission",
-                            ratio=None,
-                            confidence="medium",
-                            substitution_type="optional_omission",
-                            reason=f"{missing_item.capitalize()} serves primarily as a decorative garnish or accent and can be omitted without compromising the core dish structure.",
-                            use_case=context,
-                            dietary_compatible=True,
-                            safety_status="SAFE",
-                            can_omit=True,
-                            notes="Omit without flavor balance issues.",
-                            source="Culinary Institute of America",
-                            shopping_suggestion=f"Add {missing_item} to shopping list for full presentation.",
-                        )
-                    )
-                else:
-                    logger.info(
-                        f"[SubstitutionService] Evaluated missing item '{missing_item}' (canonical: '{canonical}') independently: "
-                        f"No reliable validated substitute identified. Preserving integrity without fabrication."
-                    )
 
         return all_candidates
 

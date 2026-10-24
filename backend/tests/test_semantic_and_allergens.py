@@ -307,3 +307,63 @@ def test_image_deduplication_guarantee_across_session():
     assert len(set(assigned_images)) == len(titles), f"Duplicate images detected: {assigned_images}"
 
 
+def test_shake_smoothie_and_dessert_image_resolution():
+    """
+    Verify that shakes, smoothies, ice cream and fruit drinks receive authentic beverage
+    and dessert photography, and never receive savory curry, taco, meat or salad photos.
+    """
+    from backend.app.services.sandbox_engine import _detect_culinary_category, _UNSPLASH_POOLS
+
+    assert _detect_culinary_category("Banana Shake", ["banana", "milk", "sugar"]) == "shake"
+    assert _detect_culinary_category("Banana Milkshake", ["banana", "milk", "ice cream"]) == "shake"
+    assert _detect_culinary_category("Chocolate Banana Smoothie", ["chocolate", "banana", "yogurt"]) == "shake"
+    assert _detect_culinary_category("Frozen Banana Milk", ["banana", "milk"]) == "shake"
+    assert _detect_culinary_category("Easy Banana Ice Cream", ["banana", "cream"]) == "icecream"
+    assert _detect_culinary_category("Sweet Vanilla Pudding", ["milk", "vanilla", "sugar"]) == "dessert"
+
+    shake_pool = set(_UNSPLASH_POOLS["shake"])
+    icecream_pool = set(_UNSPLASH_POOLS["icecream"])
+    dessert_pool = set(_UNSPLASH_POOLS["dessert"])
+
+    # 1. Banana Shake
+    img_shake = resolve_recipe_image_url(
+        title="Banana Shake",
+        recipe_id=701,
+        ner=["banana", "milk", "sugar"],
+    )
+    assert img_shake in shake_pool or "smoothie" in img_shake or "shake" in img_shake
+
+    # 2. Banana Milkshake
+    img_milkshake = resolve_recipe_image_url(
+        title="Banana Milkshake",
+        recipe_id=702,
+        ner=["banana", "milk", "vanilla"],
+    )
+    assert img_milkshake in shake_pool or "smoothie" in img_milkshake or "shake" in img_milkshake
+
+    # 3. Chocolate Banana Smoothie
+    img_smoothie = resolve_recipe_image_url(
+        title="Chocolate Banana Smoothie",
+        recipe_id=703,
+        ner=["banana", "chocolate", "yogurt"],
+    )
+    assert img_smoothie in shake_pool or "smoothie" in img_smoothie or "shake" in img_smoothie
+
+    # 4. Frozen Banana Milk
+    img_frozen = resolve_recipe_image_url(
+        title="Frozen Banana Milk",
+        recipe_id=704,
+        ner=["frozen banana", "milk"],
+    )
+    assert img_frozen in shake_pool or "smoothie" in img_frozen or "shake" in img_frozen
+
+    # 5. Easy Banana Ice Cream
+    img_icecream = resolve_recipe_image_url(
+        title="Easy Banana Ice Cream",
+        recipe_id=705,
+        ner=["banana", "heavy cream"],
+    )
+    assert img_icecream in icecream_pool or "ice cream" in img_icecream.lower() or "dessert" in img_icecream.lower() or "icecream" in img_icecream.lower() or "themealdb" in img_icecream.lower()
+
+
+

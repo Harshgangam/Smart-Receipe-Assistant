@@ -42,80 +42,430 @@
     }
   },
   {
-    "text": "Pantry item: N. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-11 (risk: medium). Status: available.",
+    "text": "Pantry item: pea. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-12 (risk: medium). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788705884118"
+      "id": "p_1788797213131"
     }
   },
   {
-    "text": "Pantry item: H. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-03-05 (risk: low). Status: available.",
+    "text": "Pantry item: flour. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2027-09-02 (risk: low). Status: consumed.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788705886977"
+      "id": "p_1788797474468"
     }
   },
   {
-    "text": "Pantry item: pea. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-11 (risk: medium). Status: available.",
+    "text": "Pantry item: chicken. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-09 (risk: high). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788705922116"
+      "id": "p_1788882289018"
     }
   },
   {
-    "text": "Pantry item: milk. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-20 (risk: low). Status: available.",
+    "text": "Pantry item: garlic. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-15 (risk: low). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788705940965"
+      "id": "p_1788882293232"
     }
   },
   {
-    "text": "Pantry item: onion. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-11-05 (risk: low). Status: available.",
+    "text": "Pantry item: onion. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-09 (risk: high). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788706816863"
+      "id": "p_1788882298512"
     }
   },
   {
-    "text": "Pantry item: chilli. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-13 (risk: low). Status: available.",
+    "text": "Pantry item: butter. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-15 (risk: low). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788706833391"
+      "id": "p_1788882311063"
     }
   },
   {
-    "text": "Pantry item: potato. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-20 (risk: low). Status: available.",
+    "text": "Pantry item: pasta. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-12-07 (risk: low). Status: available.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788707017287"
+      "id": "p_1788882315590"
     }
   },
   {
-    "text": "Pantry item: tomatoes. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-09 (risk: medium). Status: available.",
+    "text": "Pantry item: salt. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-11 (risk: medium). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788716923921"
+      "id": "p_1788882322514"
     }
   },
   {
-    "text": "Pantry item: potatoes. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-20 (risk: low). Status: available.",
+    "text": "Pantry item: tomato. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-11 (risk: medium). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788717762909"
+      "id": "p_1788882371178"
     }
   },
   {
-    "text": "Pantry item: tomato. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-14 (risk: low). Status: available.",
+    "text": "Pantry item: bread. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-09-10 (risk: high). Status: expired.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788721012565"
+      "id": "p_1788882386929"
     }
   },
   {
-    "text": "Pantry item: rice. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2028-09-06 (risk: low). Status: available.",
+    "text": "Pantry item: banana. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-14 (risk: medium). Status: consumed.",
     "metadata": {
       "source": "pantry_db",
-      "id": "p_1788721340340"
+      "id": "p_1791658052916"
+    }
+  },
+  {
+    "text": "Pantry item: apple. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-11-22 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791658057351"
+    }
+  },
+  {
+    "text": "Pantry item: milk. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-25 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791658062568"
+    }
+  },
+  {
+    "text": "Pantry item: sugar. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-18 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791658067315"
+    }
+  },
+  {
+    "text": "Pantry item: sweet. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-11-01 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791659778794"
+    }
+  },
+  {
+    "text": "Pantry item: vinegar. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2028-10-10 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791659791143"
+    }
+  },
+  {
+    "text": "Pantry item: pomegranated. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-12 (risk: high). Status: expired.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791713198950"
+    }
+  },
+  {
+    "text": "Pantry item: butter. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-12-11 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791746209930"
+    }
+  },
+  {
+    "text": "Pantry item: oregano. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-11-02 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791746213830"
+    }
+  },
+  {
+    "text": "Pantry item: bread. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-01-10 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791746217940"
+    }
+  },
+  {
+    "text": "Pantry item: sauce. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2027-04-12 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791746228121"
+    }
+  },
+  {
+    "text": "Pantry item: tomato. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-19 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791751533671"
+    }
+  },
+  {
+    "text": "Pantry item: mirchi. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-19 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791751539890"
+    }
+  },
+  {
+    "text": "Pantry item: rice. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2028-10-11 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791751546728"
+    }
+  },
+  {
+    "text": "Pantry item: lemon. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2028-04-04 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791751550763"
+    }
+  },
+  {
+    "text": "Pantry item: corainder. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-13 (risk: high). Status: expired.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791751564576"
+    }
+  },
+  {
+    "text": "Pantry item: pineapple. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-19 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791753904875"
+    }
+  },
+  {
+    "text": "Pantry item: pomegranante. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-19 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791753911884"
+    }
+  },
+  {
+    "text": "Pantry item: millk. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-19 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791753917864"
+    }
+  },
+  {
+    "text": "Pantry item: custard. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-15 (risk: medium). Status: expired.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791753927255"
+    }
+  },
+  {
+    "text": "Pantry item: rice. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-13 (risk: high). Status: expired.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791810636993"
+    }
+  },
+  {
+    "text": "Pantry item: soy sauce. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2028-04-11 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791810643083"
+    }
+  },
+  {
+    "text": "Pantry item: ginger. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-11-02 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791810655222"
+    }
+  },
+  {
+    "text": "Pantry item: garlic. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-10-07 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791810659053"
+    }
+  },
+  {
+    "text": "Pantry item: vegetable oil. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-10-12 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791810667002"
+    }
+  },
+  {
+    "text": "Pantry item: soya sauce. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-01-10 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791814228110"
+    }
+  },
+  {
+    "text": "Pantry item: sauce. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-04-12 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791815635733"
+    }
+  },
+  {
+    "text": "Pantry item: panner. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-15 (risk: medium). Status: expired.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791815895115"
+    }
+  },
+  {
+    "text": "Pantry item: curd. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-19 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791815916117"
+    }
+  },
+  {
+    "text": "Pantry item: sugar. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-15 (risk: medium). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791816874536"
+    }
+  },
+  {
+    "text": "Pantry item: honey. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-10-12 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791816878904"
+    }
+  },
+  {
+    "text": "Pantry item: onion. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-12-11 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791824002612"
+    }
+  },
+  {
+    "text": "Pantry item: pickle. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-04-12 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791824011962"
+    }
+  },
+  {
+    "text": "Pantry item: dosa batter. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-15 (risk: medium). Status: expired.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791829478065"
+    }
+  },
+  {
+    "text": "Pantry item: salt. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-19 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791829482452"
+    }
+  },
+  {
+    "text": "Pantry item: aloo curry. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-10-12 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791829493770"
+    }
+  },
+  {
+    "text": "Pantry item: banana. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-15 (risk: medium). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791829606417"
+    }
+  },
+  {
+    "text": "Pantry item: milk. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-26 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1791829616050"
+    }
+  },
+  {
+    "text": "Pantry item: banana. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-18 (risk: high). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792255697765"
+    }
+  },
+  {
+    "text": "Pantry item: milk. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2026-10-24 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792255704189"
+    }
+  },
+  {
+    "text": "Pantry item: flour. Quantity: 0.0 pcs. Storage: pantry. Expiry: 2027-10-12 (risk: low). Status: consumed.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792255715120"
+    }
+  },
+  {
+    "text": "Pantry item: rice. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2028-10-16 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792256824261"
+    }
+  },
+  {
+    "text": "Pantry item: lady finger. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-20 (risk: medium). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792256848402"
+    }
+  },
+  {
+    "text": "Pantry item: ladyfinger. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-18 (risk: high). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792257069909"
+    }
+  },
+  {
+    "text": "Pantry item: potato. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-18 (risk: high). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792257100185"
+    }
+  },
+  {
+    "text": "Pantry item: oil. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-04-16 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792267938840"
+    }
+  },
+  {
+    "text": "Pantry item: parmesan. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-01-16 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792271617783"
+    }
+  },
+  {
+    "text": "Pantry item: butter. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-11-17 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792272989327"
+    }
+  },
+  {
+    "text": "Pantry item: potatoes. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-25 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792273078560"
+    }
+  },
+  {
+    "text": "Pantry item: tomatoes. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2026-10-21 (risk: medium). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792274051951"
+    }
+  },
+  {
+    "text": "Pantry item: peanuts. Quantity: 1.0 pcs. Storage: pantry. Expiry: 2027-04-16 (risk: low). Status: available.",
+    "metadata": {
+      "source": "pantry_db",
+      "id": "p_1792274155111"
     }
   },
   {
