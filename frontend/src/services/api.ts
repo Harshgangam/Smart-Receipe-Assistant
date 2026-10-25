@@ -117,7 +117,6 @@ export async function fetchRecipeById(recipeId: number, pantry?: string[]): Prom
   return await response.json();
 }
 
-
 export async function fetchPantryItems(): Promise<PantryItem[]> {
   try {
     const response = await fetchApi('/api/pantry/items');
@@ -139,6 +138,10 @@ export async function addPantryItem(item: { name: string; category?: string; qua
 
 export async function deletePantryItem(itemId: string): Promise<void> {
   await fetchApi(`/api/pantry/items/${itemId}`, { method: 'DELETE' });
+}
+
+export async function clearAllPantryItems(): Promise<void> {
+  await fetchApi('/api/pantry/clear', { method: 'DELETE' });
 }
 
 export async function deletePantryItemByName(name: string): Promise<void> {
@@ -172,6 +175,9 @@ export async function scanPantryImage(): Promise<any> {
 
 export async function fetchSustainabilityAnalytics(): Promise<SustainabilityMetricsResponse> {
   const response = await fetchApi('/api/analytics/sustainability');
+  if (!response.ok) {
+    throw new ApiServiceError(`Failed to fetch sustainability analytics (${response.status})`);
+  }
   return (await response.json()) as SustainabilityMetricsResponse;
 }
 
@@ -224,14 +230,35 @@ export async function simulateSandbox(payload: any): Promise<any> {
   return await response.json();
 }
 
-export async function fetchMicroShoppingPlan(recipeCandidates: any[]): Promise<any> {
-  const response = await fetchApi('/api/shopping/optimize', {
+export async function uploadVisionImage(formData: FormData): Promise<any> {
+  const response = await fetchApi('/api/pantry/vision-upload', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ recipe_candidates: recipeCandidates }),
+    body: formData,
   });
   if (!response.ok) {
-    throw new ApiServiceError(`Shopping optimization error (${response.status})`);
+    let msg = `Vision processing error (${response.status})`;
+    try {
+      const err = await response.json();
+      if (err.detail) msg = err.detail;
+    } catch {}
+    throw new ApiServiceError(msg, response.status);
+  }
+  return await response.json();
+}
+
+export async function confirmVisionPantryUpdates(payload: any): Promise<any> {
+  const response = await fetchApi('/api/pantry/vision-confirm', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    let msg = `Pantry update error (${response.status})`;
+    try {
+      const err = await response.json();
+      if (err.detail) msg = err.detail;
+    } catch {}
+    throw new ApiServiceError(msg, response.status);
   }
   return await response.json();
 }

@@ -14,22 +14,17 @@ class SustainabilityAnalyticsService:
         total_items_tracked = len(pantry_items)
         consumed_count = len(consumed_items)
         
-        # Real-time Utilization Rate
+        # Real-time Factual Utilization Rate (consumed items / total items ever tracked)
         utilization_rate = (consumed_count / total_items_tracked * 100.0) if total_items_tracked > 0 else 0.0
-
-        # Real-time items rescued
-        # We assume each consumed item was "rescued" from being thrown away
-        rescued_total = consumed_count
-        waste_avoided_kg = round(rescued_total * 0.35, 2)  # Avg 0.35kg per item
         
-        # Recipes prepared is the number of 'cooked' notifications
+        # Recipes prepared is the actual number of 'cooked' notifications logged
         notifications = pantry_store.get_notifications()
         recipes_prepared = sum(1 for n in notifications if n.type == "cooked")
 
         trend_data = []
         today = datetime.datetime.now()
         
-        # Calculate daily usage based on the actual calendar days
+        # Calculate daily usage based on actual records
         daily_rescues = {}
         for i in range(7):
             d = (today - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
@@ -37,7 +32,9 @@ class SustainabilityAnalyticsService:
             
         for item in consumed_items:
             d = getattr(item, "consumed_date", None)
-            if not d and getattr(item, "id", None) and str(item.id).startswith("p_"):
+            if d:
+                d = str(d).split()[0]
+            elif getattr(item, "id", None) and str(item.id).startswith("p_"):
                 try:
                     ts = int(str(item.id).split("_")[1]) / 1000.0
                     d = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
@@ -45,6 +42,15 @@ class SustainabilityAnalyticsService:
                     d = None
             if d and d in daily_rescues:
                 daily_rescues[d] += 1
+
+        for notif in notifications:
+            if notif.type == "cooked" and notif.timestamp:
+                try:
+                    nd = str(notif.timestamp).split()[0]
+                    if nd in daily_rescues:
+                        daily_rescues[nd] += 1
+                except Exception:
+                    pass
 
         # Build 7-day trend array (from oldest to today)
         for i in range(6, -1, -1):
@@ -61,18 +67,21 @@ class SustainabilityAnalyticsService:
                 "utilization_pct": pct
             })
 
-        if rescued_total == 0:
-            status_msg = "Your pantry utilization journey starts here. Cook recipes to utilize items and track your impact!"
+        if consumed_count > 0:
+            status_msg = f"Pantry tracking active: {consumed_count} item{'s' if consumed_count != 1 else ''} consumed across {recipes_prepared} home-prepared meal{'s' if recipes_prepared != 1 else ''}."
+        elif recipes_prepared > 0:
+            status_msg = f"Pantry tracking active: {recipes_prepared} home meal{'s' if recipes_prepared != 1 else ''} prepared. {len(available_items)} active ingredients ready in pantry."
         else:
-            status_msg = f"Great job! You have utilized {rescued_total} ingredients."
+            status_msg = f"Your pantry has {len(available_items)} active ingredients on hand. Cook recipes or log used items to track pantry utilization."
 
         return {
-            "high_risk_rescued_count": rescued_total,
+            "high_risk_rescued_count": consumed_count,
             "pantry_utilization_rate": round(utilization_rate, 1),
-            "estimated_food_waste_avoided_kg": waste_avoided_kg,
+            "estimated_food_waste_avoided_kg": 0.0,
             "recipes_prepared_count": recipes_prepared,
             "current_high_risk_pantry_count": len(high_risk_items),
             "active_pantry_count": len(available_items),
+            "total_items_tracked": total_items_tracked,
             "sustainability_trend": trend_data,
             "status_summary": status_msg
         }

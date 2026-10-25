@@ -38,9 +38,24 @@ const CULINARY_PHOTO_POOLS: Record<string, string[]> = {
   ],
   dessert: [
     'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80', // Gourmet plated dessert
-    'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80', // Creamy pudding custard jar
-    'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80', // Baked sweet pastry treat
     'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=800&q=80', // Tiramisu parfait dessert glass
+    'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80', // Baked sweet pastry treat
+    'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80', // Berry tart dessert
+    'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80', // Gourmet dessert pudding bowl
+    'https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=800&q=80', // Custard sweet pastry
+  ],
+  nuts: [
+    'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&w=800&q=80', // Assorted roasted almonds, walnuts & nuts bowl
+    'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=800&q=80', // Spiced candied sugar-glazed roasted nuts
+    'https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=800&q=80', // Shelled walnuts, almonds and mixed nuts
+    'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=800&q=80', // Gourmet roasted salted & sugared nuts
+    'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80', // Artisanal sweet nut crunch and snack mix
+  ],
+  legumes: [
+    'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80', // Spiced dal and chickpea bowl
+    'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80', // Hearty lentil & bean curry
+    'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80', // Mediterranean chickpea salad
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80', // Rainbow bean & grain harvest bowl
   ],
   fruit: [
     'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80', // Fresh ripe yellow bananas
@@ -118,7 +133,6 @@ const CULINARY_PHOTO_POOLS: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=800&q=80', // Mediterranean roasted cauliflower bowl
     'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=800&q=80', // Green goddess power salad
     'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80', // Grilled garden vegetables
-    'https://images.unsplash.com/photo-1592417817098-8f3d6910985b?auto=format&fit=crop&w=800&q=80', // Steamed broccoli and greens
     'https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=800&q=80', // Fresh zucchini and herb saute
     'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=800&q=80', // Warm root vegetable tray
     'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=800&q=80', // Crisp market produce bowl
@@ -134,14 +148,12 @@ const CULINARY_PHOTO_POOLS: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1587486913049-53fc88980cfc?auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=800&q=80',
@@ -180,8 +192,20 @@ function detectCulinaryCategory(text: string, ner?: string[]): string | null {
   }
 
   // Desserts, Puddings & Custards
-  if (['dessert', 'pudding', 'custard', 'mousse', 'tiramisu', 'flan', 'parfait'].some((k) => t.includes(k))) {
+  if (['dessert', 'pudding', 'custard', 'mousse', 'tiramisu', 'flan', 'parfait', 'kheer', 'payasam', 'halwa'].some((k) => t.includes(k))) {
     return 'dessert';
+  }
+
+  // Nuts, Seeds & Candied Snacks
+  const nutWords = ['nut', 'nuts', 'almond', 'almonds', 'walnut', 'walnuts', 'pecan', 'pecans', 'cashew', 'cashews', 'pistachio', 'pistachios', 'hazelnut', 'hazelnuts', 'peanut', 'peanuts', 'praline', 'brittle', 'trail mix', 'granola'];
+  if (nutWords.some((k) => words.has(k)) || ['sugared nuts', 'candied nuts', 'glazed nuts', 'roasted nuts', 'mixed nuts', 'iced nuts'].some((k) => t.includes(k))) {
+    return 'nuts';
+  }
+
+  // Legumes, Lentils, Dals & Beans
+  const legumeWords = ['dal', 'daal', 'dahl', 'lentil', 'lentils', 'chickpea', 'chickpeas', 'garbanzo', 'kidney bean', 'kidney beans', 'rajma', 'mung bean', 'mung beans', 'masoor', 'chana', 'hummus', 'edamame', 'black bean', 'black beans'];
+  if (legumeWords.some((k) => words.has(k)) || ['masoor dal', 'mung bean', 'kidney bean', 'black bean'].some((k) => combined.includes(k))) {
+    return 'legumes';
   }
 
   // Beverages & Drinks
@@ -294,6 +318,7 @@ const SWEET_BEV_CATEGORIES = new Set([
   'pie',
   'muffin',
   'pancake',
+  'nuts',
 ]);
 
 export function getRecipeImageUrl(
@@ -312,7 +337,12 @@ export function getRecipeImageUrl(
   // 1. If a valid, non-fallback image_url is provided by the backend, use it (purging legacy idli photo)
   if (
     recipe.image_url &&
-    !recipe.image_url.includes('1589301760014')
+    !recipe.image_url.includes('1589301760014') &&
+    !recipe.image_url.includes('1541781774459') &&
+    !recipe.image_url.includes('1505253758473') &&
+    !recipe.image_url.includes('1592417817098') &&
+    !recipe.image_url.includes('1576107232684') &&
+    !recipe.image_url.includes('1579619569721')
   ) {
     if (!activeUsed.has(recipe.image_url)) {
       activeUsed.add(recipe.image_url);

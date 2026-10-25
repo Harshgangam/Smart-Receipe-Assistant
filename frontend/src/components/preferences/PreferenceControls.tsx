@@ -77,43 +77,6 @@ export const PreferenceControls: React.FC<PreferenceControlsProps> = ({
         </div>
       </div>
 
-      {/* Interactive Chef Quick Presets */}
-      <div className="pref-field" style={{ marginBottom: '1.25rem' }}>
-        <label className="pref-label">
-          <span>⚡ Interactive Chef Presets</span>
-        </label>
-        <div className="interactive-presets-grid">
-          <button
-            type="button"
-            className="preset-pill-btn"
-            onClick={() => { setMaxCookingTime(20); }}
-          >
-            ⏱️ Fast (≤20m)
-          </button>
-          <button
-            type="button"
-            className="preset-pill-btn"
-            onClick={() => { setDietary('vegetarian'); setCuisine('Indian'); }}
-          >
-            🌱 Veg Indian
-          </button>
-          <button
-            type="button"
-            className="preset-pill-btn"
-            onClick={() => { setCuisine('Italian'); setMaxCookingTime(30); }}
-          >
-            🍕 Pizza & Pasta
-          </button>
-          <button
-            type="button"
-            className="preset-pill-btn"
-            onClick={() => { setCuisine('Soup'); setMaxCookingTime(45); }}
-          >
-            🥣 Warm Soup
-          </button>
-        </div>
-      </div>
-
       {/* 1. Reimagined Preferred Cuisine Selectors (2.5D Tactile Cards with Burst Hover Effect) */}
       <div className="pref-field">
         <label className="pref-label">

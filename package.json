@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "concurrently --kill-others -n \"BACKEND,FRONTEND\" -c \"cyan.bold,magenta.bold\" \"npm run backend\" \"npm run frontend\"",
-    "frontend": "npm --prefix frontend run dev",
+    "frontend": "node scripts/start-frontend.js",
     "backend": "node scripts/start-backend.js",
     "build": "npm --prefix frontend run build",
     "test": "concurrently -n \"TEST:BACKEND,TEST:FRONTEND\" -c \"yellow.bold,blue.bold\" \"npm run test:backend\" \"npm run test:frontend\"",
@@ -16,6 +16,7 @@
     "test:frontend": "npm --prefix frontend run test"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "jsdom": "^29.1.1"
   }
 }

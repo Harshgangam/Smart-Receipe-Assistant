@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Trash2 } from 'lucide-react';
+import { X, RotateCcw } from 'lucide-react';
 
 interface PantryTagListProps {
   ingredients: string[];
@@ -29,20 +29,15 @@ export const PantryTagList: React.FC<PantryTagListProps> = ({
           {ingredients.length} item{ingredients.length === 1 ? '' : 's'} in pantry
         </span>
         <button
+          type="button"
           onClick={onClear}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--text-dim)',
-            fontSize: '0.75rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-            cursor: 'pointer',
-          }}
+          className="btn-reset-pantry"
+          style={{ padding: '0.22rem 0.55rem', fontSize: '0.75rem' }}
+          title="Reset pantry and remove all items"
+          aria-label="Reset Pantry (Clear All)"
         >
-          <Trash2 size={13} />
-          <span>Clear All</span>
+          <RotateCcw size={12} />
+          <span>Reset Pantry</span>
         </button>
       </div>
 

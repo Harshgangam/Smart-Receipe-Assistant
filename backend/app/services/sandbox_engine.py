@@ -16,7 +16,6 @@ from pydantic import BaseModel
 from backend.app.recommendation.engine import RecommendationEngine
 from backend.app.safety.allergen_guard import allergen_guard
 from backend.app.services.food_waste_optimizer import food_waste_optimizer, OptimizationWeights
-from backend.app.services.shopping_optimizer import shopping_optimizer
 
 # Load comprehensive verified meal photo catalog (790+ high-res culinary photos)
 _PHOTO_CATALOG: List[Dict[str, Any]] = []
@@ -51,9 +50,24 @@ _UNSPLASH_POOLS: Dict[str, List[str]] = {
     ],
     "dessert": [
         "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80",  # Gourmet plated dessert
-        "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80",  # Creamy pudding custard jar
-        "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",  # Baked sweet pastry treat
         "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=800&q=80",  # Tiramisu parfait dessert glass
+        "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",  # Baked sweet pastry treat
+        "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80",  # Berry tart dessert
+        "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80",  # Gourmet dessert pudding bowl
+        "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=800&q=80",  # Custard sweet pastry
+    ],
+    "nuts": [
+        "https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&w=800&q=80",  # Assorted roasted almonds, walnuts & nuts bowl
+        "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=800&q=80",  # Spiced candied sugar-glazed roasted nuts
+        "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=800&q=80",  # Shelled walnuts, almonds and mixed nuts
+        "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=800&q=80",  # Gourmet roasted salted & sugared nuts
+        "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800&q=80",  # Artisanal sweet nut crunch and snack mix
+    ],
+    "legumes": [
+        "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",  # Spiced dal and chickpea bowl
+        "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80",  # Hearty lentil & bean curry
+        "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",  # Mediterranean chickpea salad
+        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80",  # Rainbow bean & grain harvest bowl
     ],
     "fruit": [
         "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80",  # Fresh ripe yellow bananas
@@ -190,7 +204,6 @@ _UNSPLASH_POOLS: Dict[str, List[str]] = {
     ],
     "pizza": [
         "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=800&q=80",
     ],
@@ -210,7 +223,6 @@ _UNSPLASH_POOLS: Dict[str, List[str]] = {
         "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1505253758473-96b3015f21c9?auto=format&fit=crop&w=800&q=80",
     ],
     "curry": [
         "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80",
@@ -250,14 +262,12 @@ _UNSPLASH_POOLS: Dict[str, List[str]] = {
         "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1505253758473-96b3015f21c9?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=800&q=80",
@@ -290,8 +300,26 @@ def _detect_culinary_category(text: str, ner: Optional[List[str]] = None) -> Opt
         return "icecream"
 
     # Desserts, Puddings & Custards
-    if any(k in t for k in ["dessert", "pudding", "custard", "mousse", "tiramisu", "flan", "parfait"]):
+    if any(k in t for k in ["dessert", "pudding", "custard", "mousse", "tiramisu", "flan", "parfait", "kheer", "payasam", "halwa"]):
         return "dessert"
+
+    # Nuts, Seeds & Candied Snacks
+    nut_words = {
+        "nut", "nuts", "almond", "almonds", "walnut", "walnuts", "pecan", "pecans",
+        "cashew", "cashews", "pistachio", "pistachios", "hazelnut", "hazelnuts",
+        "peanut", "peanuts", "praline", "brittle", "trail mix", "granola"
+    }
+    if any(k in words for k in nut_words) or any(k in t for k in ["sugared nuts", "candied nuts", "glazed nuts", "roasted nuts", "mixed nuts", "iced nuts"]):
+        return "nuts"
+
+    # Legumes, Lentils, Dals & Beans
+    legume_words = {
+        "dal", "daal", "dahl", "lentil", "lentils", "chickpea", "chickpeas",
+        "garbanzo", "kidney bean", "kidney beans", "rajma", "mung bean", "mung beans",
+        "masoor", "chana", "hummus", "edamame", "black bean", "black beans"
+    }
+    if any(k in words for k in legume_words) or any(k in combined for k in ["masoor dal", "mung bean", "kidney bean", "black bean"]):
+        return "legumes"
 
     # Beverages & Drinks
     if any(k in t for k in ["juice", "lemonade", "cocktail", "mocktail", "cider", "punch", "beverage"]) or (any(k in t for k in ["tea", "coffee", "latte", "soda", "drink"]) and not any(k in t for k in ["meat", "chicken", "beef"])):
@@ -401,13 +429,13 @@ def resolve_recipe_image_url(
         category = "vegetable"
 
     SWEET_BEV_CATEGORIES = {
-        "shake", "icecream", "dessert", "fruit", "drink", "cake", "cookie", "pie", "muffin", "pancake"
+        "shake", "icecream", "dessert", "fruit", "drink", "cake", "cookie", "pie", "muffin", "pancake", "nuts"
     }
     sweet_or_bev_words = {
         "shake", "smoothie", "milkshake", "frappe", "ice cream", "icecream", "dessert",
         "pudding", "custard", "mousse", "parfait", "sorbet", "gelato", "popsicle",
         "banana", "strawberry", "blueberry", "raspberry", "mango", "peach", "fruit",
-        "cake", "cookie", "pie", "muffin", "pancake", "waffle", "crepe", "juice",
+        "cake", "cookie", "pie", "muffin", "pancake", "waffle", "crepe", "juice", "nut", "nuts", "almond", "pecan", "walnut", "sugared", "candied",
         "lemonade", "cocktail", "mocktail", "sweet", "chocolate", "vanilla", "honey"
     }
     is_sweet_or_bev = (category in SWEET_BEV_CATEGORIES) or any(w in t_lower for w in sweet_or_bev_words)
@@ -635,7 +663,7 @@ class LeftoverSandboxEngine:
                 continue
 
             # Estimate cost
-            missing_cost = sum(shopping_optimizer.estimate_item_cost(item).estimated_package_cost for item in rec.missing_ingredients)
+            missing_cost = 0.0
 
             # Waste Optimization
             waste_res = food_waste_optimizer.optimize_recipe_ranking(
@@ -682,11 +710,46 @@ class LeftoverSandboxEngine:
         # 3. Sort overall top
         all_items.sort(key=lambda x: x.match_score, reverse=True)
 
-        # 4. Form Recommendation Clusters
-        max_pantry = sorted(all_items, key=lambda x: x.pantry_usage_score, reverse=True)[:6]
-        low_cost = sorted(all_items, key=lambda x: (len(x.missing_ingredients), x.missing_cost))[:6]
-        near_expiry = sorted(all_items, key=lambda x: x.expiry_priority_score, reverse=True)[:6]
-        quick_meals = sorted(all_items, key=lambda x: (x.cooking_time_minutes or 999))[:6]
+        # 4. Form Distinct Recommendation Clusters
+        # Cluster A: Max Pantry Use -> Prioritizes recipes using the MOST items from the pantry
+        def sort_pantry_use(x):
+            matched_count = len(x.matched_ingredients or [])
+            pus = x.pantry_usage_score or 0.0
+            ims = x.ims or 0.0
+            return (matched_count, pus, ims, x.match_score)
+
+        sorted_by_pantry = sorted(all_items, key=sort_pantry_use, reverse=True)[:6]
+        max_pantry = []
+        for itm in sorted_by_pantry:
+            c = itm.model_copy()
+            c.why_recommended = f"🌟 Max Pantry Use: Utilizes {len(c.matched_ingredients)} pantry items ({c.pantry_usage_score:.0f}% of inventory)."
+            max_pantry.append(c)
+
+        # Cluster B: Lowest Shopping Burden -> Strictly minimizes missing ingredients (0 to buy, then 1, then 2)
+        def sort_shopping_burden(x):
+            missing_count = len(x.missing_ingredients or [])
+            matched_count = len(x.matched_ingredients or [])
+            total = matched_count + missing_count
+            ratio = (matched_count / total) if total > 0 else 0.0
+            return (missing_count, -ratio, -x.match_score)
+
+        sorted_by_shopping = sorted(all_items, key=sort_shopping_burden)[:6]
+        low_cost = []
+        for itm in sorted_by_shopping:
+            c = itm.model_copy()
+            miss_cnt = len(c.missing_ingredients or [])
+            if miss_cnt == 0:
+                c.why_recommended = "🛒 0 Shopping Needed! 100% on-hand pantry meal."
+            else:
+                miss_names = ", ".join(c.missing_ingredients[:2])
+                c.why_recommended = f"🛒 Lowest Shopping Burden: Only {miss_cnt} extra item(s) to buy ({miss_names})."
+            low_cost.append(c)
+
+        # Cluster C: Near Expiry Rescues
+        near_expiry = sorted(all_items, key=lambda x: (x.expiry_priority_score, x.match_score), reverse=True)[:6]
+
+        # Cluster D: Quick Meals
+        quick_meals = sorted(all_items, key=lambda x: (x.cooking_time_minutes or 999, -x.match_score))[:6]
 
         clusters = SandboxClusters(
             max_pantry_use=max_pantry,

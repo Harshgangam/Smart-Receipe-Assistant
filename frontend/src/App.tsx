@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, LayoutDashboard, ShoppingBag, UtensilsCrossed, LineChart, Sparkles, ShoppingCart } from 'lucide-react';
+import { Search, LayoutDashboard, ShoppingBag, UtensilsCrossed, LineChart, Sparkles, Camera, RotateCcw } from 'lucide-react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { PantryInput } from './components/pantry/PantryInput';
@@ -13,7 +13,7 @@ import { ErrorAlert } from './components/common/ErrorAlert';
 import { RecipeDetailPage } from './components/detail/RecipeDetailPage';
 import { SustainabilityDashboard } from './components/analytics/SustainabilityDashboard';
 import { LeftoverSandbox } from './components/sandbox/LeftoverSandbox';
-import { MicroShoppingDashboard } from './components/shopping/MicroShoppingDashboard';
+import { VisionIntakeDashboard } from './components/vision/VisionIntakeDashboard';
 
 import { usePantry } from './hooks/usePantry';
 import { usePreferences } from './hooks/usePreferences';
@@ -24,42 +24,68 @@ import { cookRecipe } from './services/api';
 import { FloatingFoodStage, FloatingFoodItem } from './components/common/FloatingFoodStage';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'pantry' | 'recipes' | 'sandbox' | 'shopping' | 'analytics'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'pantry' | 'vision' | 'recipes' | 'sandbox' | 'analytics'>('dashboard');
 
-  const { ingredients, setIngredients, addIngredient, removeIngredient, clearPantry, addMultiple, setPantry } = usePantry([]);
+  const { ingredients, setIngredients, addIngredient, removeIngredient, clearPantry, addMultiple, setPantry, refreshPantry } = usePantry([]);
+
+  const handleResetPantry = async () => {
+    if (ingredients.length === 0) return;
+    if (window.confirm(`Are you sure you want to reset your kitchen pantry? This will remove all ${ingredients.length} item(s).`)) {
+      await clearPantry();
+      setPantryRefreshKey((k) => k + 1);
+    }
+  };
+
+  const handleVisionPantryConfirmed = async (confirmedNames?: string[], mode: 'replace' | 'append' = 'replace') => {
+    // 1. Optimistic update based on mode
+    if (confirmedNames && confirmedNames.length > 0) {
+      if (mode === 'replace') {
+        setIngredients(confirmedNames.map((n) => n.toLowerCase().trim()));
+      } else {
+        setIngredients((prev) => Array.from(new Set([...prev, ...confirmedNames.map((n) => n.toLowerCase().trim())])));
+      }
+    }
+    // 2. Fresh sync from SQLite
+    const latest = await refreshPantry();
+    setPantryRefreshKey((k) => k + 1);
+
+    // 3. Immediately re-score recommendations with full updated inventory
+    const activeList = latest.length > 0 ? latest : (confirmedNames || ingredients);
+    search(activeList, preferences, 12, false);
+
+    // 4. Switch to main dashboard so user immediately sees their updated pantry & recommendations!
+    setActiveTab('dashboard');
+  };
 
   const preferences = usePreferences();
   const { data, loading, error, search } = useRecommendations();
+
+  const STAPLE_OPTIONS = [
+    'tomato', 'onion', 'garlic', 'potato', 'rice', 'eggs', 'curd', 'pasta', 'cheese', 'spinach'
+  ];
+
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeRecommendationItem | null>(null);
   const [detailPantryOverride, setDetailPantryOverride] = useState<string[] | null>(null);
   const [pantryRefreshKey, setPantryRefreshKey] = useState(0);
   const [inspirationFood, setInspirationFood] = useState<string | null>(null);
 
-  // Guard against React StrictMode double-invocation: prevents cookRecipe from
-  // being called twice (which would increment analytics count by 2 instead of 1).
+  // Guard against React StrictMode double-invocation
   const cookedInFlight = useRef(false);
 
   const handleSelectRecipe = (recipe: RecipeRecommendationItem, overridePantry?: string[]) => {
-    cookedInFlight.current = false; // reset lock for each new recipe
+    cookedInFlight.current = false;
     setDetailPantryOverride(overridePantry || null);
     setSelectedRecipe(recipe);
   };
 
   const handleSelectFloatingFood = (item: FloatingFoodItem) => {
-    // 1. Reset the user's pantry to this dish's authentic ingredient bundle
-    // Eliminates accumulation of previous ingredients (e.g. avocado persisting across all selections)
     setPantry(item.ingredients);
-
-    // 2. Switch to recipes tab and trigger targeted recommendation search with query steering
     setActiveTab('recipes');
     search(item.ingredients, preferences, 12, false, item.query);
-
-    // 3. Show delightful inspiration feedback
     setInspirationFood(item.name);
     setTimeout(() => setInspirationFood(null), 4500);
   };
 
-  // Synchronize browser history and hash for back button navigation
   useEffect(() => {
     const handleHash = () => {
       if (!window.location.hash.startsWith('#recipe-') && selectedRecipe) {
@@ -85,7 +111,6 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      {/* Interactive 3D Floating Food Stage with Multi-Motion Bobbing & Click-to-Cook */}
       <FloatingFoodStage onSelectFood={handleSelectFloatingFood} />
 
       <Header />
@@ -112,7 +137,6 @@ export const App: React.FC = () => {
             window.location.hash = activeTab;
           }}
           onCooked={async (usedNer: string[]) => {
-            // Prevent double-fire from React StrictMode or any accidental double-click
             if (cookedInFlight.current) return;
             cookedInFlight.current = true;
             try {
@@ -149,6 +173,14 @@ export const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('vision')}
+              className={`nav-tab-btn ${activeTab === 'vision' ? 'active' : ''}`}
+            >
+              <Camera size={16} />
+              <span>Vision Intake & Snap</span>
+            </button>
+
+            <button
               onClick={() => { setActiveTab('recipes'); if (!data) handleSearch(); }}
               className={`nav-tab-btn ${activeTab === 'recipes' ? 'active' : ''}`}
             >
@@ -162,14 +194,6 @@ export const App: React.FC = () => {
             >
               <Sparkles size={16} />
               <span>Leftover Sandbox</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('shopping')}
-              className={`nav-tab-btn ${activeTab === 'shopping' ? 'active' : ''}`}
-            >
-              <ShoppingCart size={16} />
-              <span>Micro-Shopping ROI</span>
             </button>
 
             <button
@@ -191,18 +215,19 @@ export const App: React.FC = () => {
             />
           )}
 
+          <div style={{ display: activeTab === 'vision' ? 'block' : 'none' }}>
+            <VisionIntakeDashboard
+              onPantryUpdated={(names, mode) => handleVisionPantryConfirmed(names, mode)}
+              onRecipesDiscovered={(_recs, names, mode) => handleVisionPantryConfirmed(names, mode)}
+            />
+          </div>
+
           {activeTab === 'sandbox' && (
             <LeftoverSandbox
               initialIngredients={ingredients}
               dietaryPreference={preferences.dietary}
               onSelectRecipe={handleSelectRecipe}
               onDietaryChange={(diet) => preferences.setDietary(diet)}
-            />
-          )}
-
-          {activeTab === 'shopping' && (
-            <MicroShoppingDashboard
-              candidateRecipes={data?.recommendations || []}
             />
           )}
 
@@ -213,9 +238,22 @@ export const App: React.FC = () => {
               {/* Left Column: Pantry & Personalization Controls */}
               <aside className="sidebar-card glass-panel">
                 <div>
-                  <div className="section-header">
-                    <h2 className="section-title">Your Kitchen Pantry</h2>
-                    <span className="section-badge">{ingredients.length} items</span>
+                  <div className="section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h2 className="section-title" style={{ margin: 0 }}>Your Kitchen Pantry</h2>
+                      <span className="section-badge">{ingredients.length} {ingredients.length === 1 ? 'item' : 'items'}</span>
+                    </div>
+                    {ingredients.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleResetPantry}
+                        className="btn-reset-pantry"
+                        title="Reset all ingredients in pantry"
+                      >
+                        <RotateCcw size={13} />
+                        <span>Reset Pantry</span>
+                      </button>
+                    )}
                   </div>
                   <PantryInput
                     onAdd={(rawItem, expiryDays) => {
@@ -226,6 +264,50 @@ export const App: React.FC = () => {
                       return added;
                     }}
                   />
+
+                  {/* Interactive Quick-Add Staple Buttons */}
+                  <div style={{ marginTop: '10px' }}>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-dim)', marginBottom: '6px' }}>
+                      ⚡ Quick-Add Pantry Staples:
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                      {STAPLE_OPTIONS.map((staple) => {
+                        const inPantry = ingredients.map(i => i.toLowerCase()).includes(staple.toLowerCase());
+                        return (
+                          <button
+                            key={staple}
+                            type="button"
+                            onClick={() => {
+                              if (!inPantry) {
+                                addIngredient(staple);
+                                setPantryRefreshKey((k) => k + 1);
+                              }
+                            }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '4px 9px',
+                              borderRadius: '20px',
+                              fontSize: '0.74rem',
+                              fontWeight: 600,
+                              cursor: inPantry ? 'default' : 'pointer',
+                              border: inPantry ? '1px solid #10B981' : '1px solid rgba(255, 255, 255, 0.2)',
+                              background: inPantry ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.12)',
+                              color: inPantry ? '#059669' : 'var(--text-main)',
+                              transition: 'all 0.15s ease',
+                            }}
+                            title={inPantry ? `${staple} is already in your pantry` : `Click to add ${staple}`}
+                          >
+                            <span>{inPantry ? '✓' : '+'}</span>
+                            <span style={{ textTransform: 'capitalize' }}>{staple}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+
                 </div>
 
                 <PantryTagList
@@ -234,10 +316,7 @@ export const App: React.FC = () => {
                     removeIngredient(item);
                     setPantryRefreshKey((k) => k + 1);
                   }}
-                  onClear={() => {
-                    clearPantry();
-                    setPantryRefreshKey((k) => k + 1);
-                  }}
+                  onClear={handleResetPantry}
                 />
 
                 <div style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '1.5rem' }}>
@@ -282,15 +361,13 @@ export const App: React.FC = () => {
 
                 {!loading && hasRecommendations && (
                   <div>
-                    <div className="results-header">
-                      <div>
-                        <h2 className="results-count">
-                          Ranked Food Rescue Recommendations ({data.recommendations.length})
-                        </h2>
-                        <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)' }}>
-                          Evaluated {data.total_candidates_evaluated} candidates from 2.23M corpus
-                        </span>
-                      </div>
+                    <div className="results-header" style={{ marginBottom: '16px' }}>
+                      <h2 className="results-count">
+                        Ranked Recommendations ({data.recommendations.length})
+                      </h2>
+                      <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)' }}>
+                        Evaluated {data.total_candidates_evaluated} candidates from 2.23M corpus
+                      </span>
                     </div>
 
                     <div className="recipe-cards-grid">

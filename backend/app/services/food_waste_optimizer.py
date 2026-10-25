@@ -1,9 +1,9 @@
 """
 backend/app/services/food_waste_optimizer.py
 
-Novelty 3: Food Waste Minimization Engine
+Food Waste Minimization Engine:
 Multi-objective optimization balancing Pantry Usage (PUS), Near-Expiry Item Urgency (ExpiryPriority),
-and Missing Purchase Cost.
+and Missing Ingredient Burden (without fabricated price estimation).
 """
 
 from datetime import datetime, date
@@ -17,9 +17,9 @@ class ExpiryItemInfo(BaseModel):
     urgency_weight: float = 0.1
 
 class OptimizationWeights(BaseModel):
-    pantry_usage: float = 0.4
-    expiry_priority: float = 0.3
-    shopping_cost: float = 0.3
+    pantry_usage: float = 0.6
+    expiry_priority: float = 0.4
+    shopping_cost: float = 0.0  # Obsolete: kept at 0.0 for signature backwards-compatibility
 
 class WasteOptimizationResult(BaseModel):
     recipe_id: int
@@ -27,7 +27,7 @@ class WasteOptimizationResult(BaseModel):
     pantry_usage_score: float
     expiry_priority_score: float
     missing_items_count: int
-    estimated_missing_cost: float
+    estimated_missing_cost: float = 0.0
     composite_waste_score: float
     rescuing_expiring_items: List[str]
     rationale: str
@@ -100,21 +100,21 @@ class FoodWasteOptimizer:
 
         expiry_score = min(100.0, (total_urgency / max(1, used_pantry_count)) * 100.0) if used_pantry_count > 0 else 0.0
 
-        # 3. Missing Purchase Burden Penalty
+        # 3. Missing Ingredient Burden Penalty (pure count, no fake dollar values)
         missing_count = len(missing_ingredients)
-        cost_penalty = min(50.0, estimated_missing_cost * 2.0 + missing_count * 5.0)
+        missing_penalty = min(30.0, missing_count * 4.0)
 
         # 4. Multi-Objective Composite Score
         composite_score = (
             weights.pantry_usage * pus +
             weights.expiry_priority * expiry_score -
-            weights.shopping_cost * cost_penalty
+            missing_penalty
         )
         composite_score = min(100.0, max(0.0, composite_score))
 
         # 5. Rationale Generation
         rescue_str = f"Rescues near-expiry items: {', '.join(rescuing_items)}." if rescuing_items else "Uses fresh pantry staples."
-        rationale = f"Consumes {used_pantry_count} pantry items ({pus:.1f}% PUS). {rescue_str} Requires {missing_count} missing item(s) (~${estimated_missing_cost:.2f})."
+        rationale = f"Consumes {used_pantry_count} pantry items ({pus:.1f}% PUS). {rescue_str} Requires {missing_count} missing item(s)."
 
         return WasteOptimizationResult(
             recipe_id=recipe_id,
@@ -122,7 +122,7 @@ class FoodWasteOptimizer:
             pantry_usage_score=round(pus, 1),
             expiry_priority_score=round(expiry_score, 1),
             missing_items_count=missing_count,
-            estimated_missing_cost=round(estimated_missing_cost, 2),
+            estimated_missing_cost=0.0,
             composite_waste_score=round(composite_score, 1),
             rescuing_expiring_items=rescuing_items,
             rationale=rationale,

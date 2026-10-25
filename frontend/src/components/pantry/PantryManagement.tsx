@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PantryItem } from '../../types/recipe';
-import { fetchPantryItems, addPantryItem, deletePantryItem, fetchApi } from '../../services/api';
+import { fetchPantryItems, addPantryItem, deletePantryItem, clearAllPantryItems, fetchApi } from '../../services/api';
 
 interface PantryManagementProps {
   onPantryChange?: (items: string[]) => void;
@@ -98,9 +98,38 @@ export const PantryManagement: React.FC<PantryManagementProps> = ({ onPantryChan
   return (
     <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '24px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#f3f4f6' }}>Dynamic Pantry Intelligence</h2>
-        <p style={{ margin: '4px 0 0', color: '#9ca3af', fontSize: '13px' }}>Monitor quantities, categories, and real-time expiry risk levels.</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#f3f4f6' }}>Dynamic Pantry Intelligence</h2>
+          <p style={{ margin: '4px 0 0', color: '#9ca3af', fontSize: '13px' }}>Monitor quantities, categories, and real-time expiry risk levels.</p>
+        </div>
+        {items.length > 0 && (
+          <button
+            type="button"
+            onClick={async () => {
+              if (window.confirm("Are you sure you want to clear all " + items.length + " items from your kitchen pantry?")) {
+                await clearAllPantryItems();
+                await loadItems();
+              }
+            }}
+            style={{
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1.5px solid #ef4444',
+              color: '#f87171',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s',
+            }}
+          >
+            🗑️ Clear Entire Pantry ({items.length})
+          </button>
+        )}
       </div>
 
       {scanMessage && (

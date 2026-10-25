@@ -1,5 +1,40 @@
 [
   {
+    "id": "n_1792929782883",
+    "message": "You just cooked 'Grilled / Tandoori Vegetables'! Utilized 3 ingredients from your pantry.",
+    "type": "cooked",
+    "read": false,
+    "timestamp": "2026-10-25 17:33"
+  },
+  {
+    "id": "n_1792927214978",
+    "message": "You just cooked 'Ziti agli Asparagi'! Utilized 4 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-25 16:50"
+  },
+  {
+    "id": "n_1792926935506",
+    "message": "You just cooked '\"Let'S Have A Little Fun\" Possum Plank Steak'! Utilized 2 ingredients from your pantry.",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-25 16:45"
+  },
+  {
+    "id": "n_1792911834390",
+    "message": "You just cooked 'Old-Fashioned Pineapple Rice Casserole'!",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-25 12:33"
+  },
+  {
+    "id": "n_1792911663794",
+    "message": "You just cooked 'Asparagus Fettuccine'!",
+    "type": "cooked",
+    "read": true,
+    "timestamp": "2026-10-25 12:31"
+  },
+  {
     "id": "n_1792850912524",
     "message": "You just cooked 'Do-It-Yourself Oven Sun-Dried Tomatoes'! Automatically utilized 1 ingredients from your pantry.",
     "type": "cooked",

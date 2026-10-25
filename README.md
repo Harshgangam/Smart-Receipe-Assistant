@@ -1,6 +1,6 @@
-# 🍲 AI-Powered Pantry Intelligence & Food Rescue Assistant
+# 🍲 AI-Powered Pantry Intelligence, Vision Intake & Food Rescue Assistant
 
-An intelligent web-based culinary assistant that reduces household food waste by transforming pantry ingredients into personalized recipe recommendations. Powered by **Hybrid FAISS + ChromaDB RAG**, **Groq LLM (qwen3.8-27b)**, **Deterministic Dual Scoring (IMS + PUS)**, and a full **Grounded RAG AI Assistant**.
+An intelligent web-based culinary assistant that reduces household food waste by transforming pantry ingredients into personalized recipe recommendations. Powered by **Computer Vision Ingredient Intake**, **Hybrid FAISS + ChromaDB RAG**, **Groq / Gemini LLM**, **Deterministic Dual Scoring (IMS + PUS)**, and a full **Grounded RAG AI Assistant**.
 
 [Quick Start](#-quick-start) • [Features](#-key-features) • [RAG Pipeline](#-rag-pipeline) • [API Docs](#-api-documentation) • [Model Performance](#-model-performance--ablation-study)
 
@@ -8,6 +8,7 @@ An intelligent web-based culinary assistant that reduces household food waste by
 
 ## 📖 Table of Contents
 - [✨ Key Features](#-key-features)
+- [📸 Vision-Powered Pantry Inventory](#-vision-powered-pantry-inventory)
 - [🚀 Quick Start](#-quick-start)
 - [📁 Project Structure](#-project-structure)
 - [🔧 Installation](#-installation)
@@ -15,6 +16,7 @@ An intelligent web-based culinary assistant that reduces household food waste by
 - [📊 Dataset & Recommendation Pipeline](#-dataset--recommendation-pipeline)
 - [🌐 Usage](#-usage)
 - [📚 API Documentation](#-api-documentation)
+- [🧪 Testing & Verification](#-testing--verification)
 - [📊 Model Performance & Ablation Study](#-model-performance--ablation-study)
 - [🛠️ Troubleshooting](#-troubleshooting)
 - [📋 System Requirements](#-system-requirements)
@@ -27,13 +29,59 @@ An intelligent web-based culinary assistant that reduces household food waste by
 
 | Feature | Description | Status |
 | :--- | :--- | :---: |
+| 📸 **Intelligent Vision Intake** | Camera/upload recognition of fridge items, countertops, packaged goods & transparent containers | ✅ Active |
+| 🛡️ **3-Tier Confidence Gating** | High (>= 0.85), Medium (0.60-0.84), and Low (< 0.60) confidence verification with user review | ✅ Active |
+| 🫙 **Container & OCR Intelligence** | Disambiguates visual twins (curd vs. cream) and extracts packaged labels via OCR | ✅ Active |
+| 🏷️ **Canonical Normalization** | Normalizes colloquial terms (*dahi* -> *curd*, *capsicum* -> *bell pepper*) & singularizes units | ✅ Active |
+| 🗄️ **SQLite Transactional Pantry** | ACID-compliant pantry database with UPSERT logic, expiry tracking, and zero price dependencies | ✅ Active |
 | 🤖 **Deterministic Dual Scoring** | Calculates **IMS** (Ingredient Match Score) & **PUS** (Pantry Utilization Score) | ✅ Active |
-| 🎯 **Engine** | **uses Ingredient Match Score (IMS) and Pantry Utilization Score (PUS). | ✅ Active |
+| 🎯 **Recommendation Engine** | Combines IMS and PUS with dietary, expiry, and diversity scoring for zero-waste suggestions | ✅ Active |
 | 🥗 **Full Dietary Support** | Complete support for **Vegetarian**, **Vegan**, and **Non-Vegetarian** diets | ✅ Active |
 | 🔍 **Hybrid FAISS + ChromaDB** | FAISS for fast candidate retrieval + ChromaDB for semantic RAG assistant search | ✅ Active |
 | 💬 **Grounded RAG Assistant** | Groq-powered (qwen3.8-27b) assistant with ChromaDB vector search & strict recipe grounding | ✅ Active |
 | ⚡ **Single Command Start** | Starts React + Vite frontend and FastAPI backend simultaneously with `npm run dev` | ✅ Active |
 | 📊 **Visual Analytics** | Interactive sustainability dashboard tracking waste avoided (kg) & 7-day rescue trends | ✅ Active |
+
+---
+
+## 📸 Vision-Powered Pantry Inventory
+
+The system features an intelligent computer vision engine that turns everyday photos of your kitchen (refrigerators, countertops, pantries, spice racks, and transparent storage containers) directly into confirmed pantry ingredients and recipe recommendations.
+
+### Architecture Highlights
+
+```
+Image Upload (PNG / JPG / WEBP, Max 10MB)
+                 │
+                 ▼
+     [Vision Intake Pipeline]
+  ┌─────────────────────────────────────────────────────────────┐
+  │ 1. Container & Packaging Detection (OCR + Ambiguity Flags)  │
+  │ 2. Canonical Normalization (e.g., "dahi" -> "curd")         │
+  │ 3. 3-Tier Confidence Gating:                                │
+  │    • HIGH (>=0.85): Direct high-confidence match            │
+  │    • MEDIUM (0.60-0.84): Review with visual twin candidates │
+  │    • LOW (<0.60): Flagged for user inspection               │
+  └─────────────────────────────────────────────────────────────┘
+                 │
+                 ▼
+  [Interactive UI Review & Quantity Adjustment]
+                 │
+                 ▼
+  [POST /api/pantry/vision-confirm] ──► SQLite Pantry Database
+                 │
+                 ▼
+  [Auto-trigger RAG Recommendations] ──► Instant Zero-Waste Recipes
+```
+
+1. **Transparent Container & Visual Ambiguity Handling:**
+   Transparent plastic and glass containers often hold visually indistinguishable white or colored foods (curd vs. cream, salt vs. sugar, paneer vs. tofu). The intake service flags container context (`in_container=True`), notes potential ambiguities, and presents candidate alternatives for user confirmation.
+2. **Packaged Goods OCR:**
+   Food packaging labels, sauce bottles, and spice pouches are parsed for product names and units, bypassing generic visual ambiguity.
+3. **Canonical Normalization:**
+   Maps regional/colloquial variants (e.g. *dahi*, *capsicum*, *cilantro*, *yoghurt*) into clean canonical tokens matched by the recipe database.
+4. **Zero-Price Architecture:**
+   All deprecated micro-shopping optimizer modules and arbitrary $1.99 fallback price approximations have been completely purged from the codebase. Pantry management and recipe optimization prioritize ingredients on hand and food waste reduction (expiry urgency), not hypothetical shopping costs.
 
 ---
 
@@ -118,11 +166,17 @@ Harsh-AI-Powered-Pantry-Recipe-Assistant/
 │   │   │   ├── 📄 hybrid_retriever.py # FAISS + SQLite candidate retrieval
 │   │   │   ├── 📄 scorer.py           # IMS, PUS, FRPS calculation
 │   │   │   └── 📄 personalizer.py
-│   │   ├── 📂 pantry/                 # Pantry inventory & risk tracking
+│   │   ├── 📂 pantry/                 # Pantry inventory & SQLite storage
+│   │   │   ├── 📄 sqlite_pantry.py    # ACID SQLite repository, schema, UPSERT logic
+│   │   │   └── 📄 pantry_store.py     # Unified pantry access layer
 │   │   ├── 📂 leftovers/              # Leftover store & 3-day meal chain planner
-│   │   ├── 📂 routers/                # FastAPI REST routers
+│   │   ├── 📂 routers/                # FastAPI REST routers (pantry, recipes, assistant)
+│   │   │   └── 📄 pantry.py           # /vision-upload & /vision-confirm endpoints
 │   │   ├── 📂 substitutions/          # Ingredient substitution engine
-│   │   └── 📂 services/               # Analytics & business logic
+│   │   └── 📂 services/               # Computer vision, normalizer & business logic
+│   │       ├── 📄 vision_intake.py    # Multi-item vision intake with 3-tier gating & OCR
+│   │       ├── 📄 ingredient_normalizer.py # Canonical lexicon & synonym mapper
+│   │       └── 📄 food_waste_optimizer.py
 │   ├── 📂 data/processed/             # Processed datasets
 │   │   ├── 📄 recipes.parquet         # Full recipe corpus
 │   │   ├── 📄 ingredient_index.sqlite # Inverted ingredient index
@@ -271,13 +325,61 @@ $$\text{FRPS} = w_1\text{IMS} + w_2\text{PUS} + w_3\text{EPS} + w_4\text{QUS} + 
 
 | Endpoint | Method | Description |
 | :--- | :---: | :--- |
+| `/api/pantry/vision-upload` | `POST` | Upload photo (multipart/form-data) for ingredient recognition |
+| `/api/pantry/vision-confirm` | `POST` | Confirm verified ingredients, update SQLite, trigger recipes |
 | `/api/recommendations` | `POST` | Get FRPS-ranked recipe recommendations |
 | `/api/pantry/items` | `GET/POST` | View or update pantry inventory |
 | `/api/pantry/cook` | `POST` | Deduct cooked recipe ingredients |
 | `/api/leftovers` | `GET/POST` | Manage active leftovers |
-| `/api/assistant/ask` | `POST` | Groq RAG conversational AI assistant |
+| `/api/assistant/ask` | `POST` | Groq / Gemini RAG conversational AI assistant |
 | `/api/analytics/sustainability` | `GET` | Sustainability impact metrics |
 | `/health` | `GET` | Backend health check |
+
+> [!NOTE]
+> All legacy endpoints and modules related to micro-shopping price optimization (`/api/shopping/*`) have been permanently decommissioned.
+
+### Sample: Vision Upload Response
+```json
+POST /api/pantry/vision-upload
+Content-Type: multipart/form-data (image file)
+
+{
+  "detected_items": [
+    {
+      "name": "greek yogurt",
+      "canonical_name": "curd",
+      "category": "dairy",
+      "confidence": 0.88,
+      "confidence_tier": "HIGH",
+      "quantity": 1.0,
+      "unit": "cup",
+      "expiry_days": 7,
+      "in_container": true,
+      "visual_twin_candidates": ["sour cream", "mayonnaise"],
+      "ambiguity_notes": "Dairy tub detected; confirmed as curd via packaging context."
+    }
+  ],
+  "image_summary": "1 ingredients identified (1 high certainty, 0 need review)",
+  "review_recommended": false
+}
+```
+
+### Sample: Vision Confirm Request
+```json
+POST /api/pantry/vision-confirm
+{
+  "items": [
+    {
+      "canonical_name": "curd",
+      "quantity": 1.0,
+      "unit": "cup",
+      "expiry_days": 7,
+      "confidence": 0.88
+    }
+  ],
+  "trigger_recommendations": true
+}
+```
 
 ### Sample: AI Assistant Request
 ```json
@@ -298,6 +400,33 @@ POST /api/recommendations
   "limit": 5,
   "dietary_preference": "vegetarian"
 }
+```
+
+---
+
+## 🧪 Testing & Verification
+
+Comprehensive test suites cover backend vision intake, canonical normalization, SQLite persistence, and frontend UI components.
+
+### Backend Tests
+```bash
+# Activate virtual environment
+.\.venv\Scripts\activate
+
+# Run vision & pantry specific test suite (15 tests)
+python -m pytest backend/tests/test_vision_pantry.py -v
+
+# Run full project test suite (118 tests)
+python -m pytest backend/tests -v
+```
+
+### Frontend Tests & Type Checking
+```bash
+# Run Vitest component tests
+npm --prefix frontend run test
+
+# Validate TypeScript & build bundle
+npm --prefix frontend run build
 ```
 
 ---

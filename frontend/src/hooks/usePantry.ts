@@ -1,22 +1,30 @@
 import { useCallback, useEffect, useState } from 'react';
-import { addPantryItem, deletePantryItem, deletePantryItemByName, fetchPantryItems } from '../services/api';
+import { addPantryItem, clearAllPantryItems, deletePantryItemByName, fetchPantryItems } from '../services/api';
 
 export function usePantry(initialIngredients: string[] = []) {
   const [ingredients, setIngredients] = useState<string[]>(initialIngredients);
 
-  // 1. Initial sync: load existing items from Pantry Intelligence into Kitchen Pantry
-  useEffect(() => {
-    fetchPantryItems()
-      .then((items) => {
-        if (items && items.length > 0) {
-          const names = items.map((i) => i.name.toLowerCase().trim());
-          setIngredients((prev) => Array.from(new Set([...prev, ...names])));
-        }
-      })
-      .catch((err) => console.error('Failed to load initial pantry items:', err));
+  const refreshPantry = useCallback(async (): Promise<string[]> => {
+    try {
+      const items = await fetchPantryItems();
+      if (items && Array.isArray(items)) {
+        const names = items.map((i) => i.name.toLowerCase().trim()).filter(Boolean);
+        const unique = Array.from(new Set(names));
+        setIngredients(unique);
+        return unique;
+      }
+    } catch (err) {
+      console.error('Failed to load initial pantry items:', err);
+    }
+    return [];
   }, []);
 
-  // 2. Add ingredient: updates Photo 1 immediately and persists to Photo 2 (Pantry Intelligence)
+  // 1. Initial sync: load existing items from Pantry Intelligence into Kitchen Pantry
+  useEffect(() => {
+    refreshPantry();
+  }, [refreshPantry]);
+
+  // 2. Add ingredient: updates Kitchen Pantry immediately and persists to SQLite backend
   const addIngredient = useCallback((rawItem: string, expiryDays: number = 7): boolean => {
     if (!rawItem || !rawItem.trim()) return false;
     const items = rawItem
@@ -53,23 +61,20 @@ export function usePantry(initialIngredients: string[] = []) {
     return itemsToAdd.length > 0;
   }, []);
 
-  // 3. Remove ingredient: removes from Photo 1 AND deletes from Photo 2 (Pantry Intelligence)
+  // 3. Remove ingredient: removes from local UI state and deletes from SQLite backend
   const removeIngredient = useCallback((itemToRemove: string) => {
     const cleanName = itemToRemove.trim().toLowerCase();
-    // Remove from local UI state (Photo 1)
     setIngredients((prev) =>
       prev.filter((i) => i.toLowerCase() !== cleanName)
     );
-    // Delete from backend pantry (Photo 2)
     deletePantryItemByName(cleanName);
   }, []);
 
-  // 4. Clear all ingredients: clears both Photo 1 and Photo 2
+  // 4. Clear all ingredients: clears both local state and backend database
   const clearPantry = useCallback(async () => {
     setIngredients([]);
     try {
-      const items = await fetchPantryItems();
-      await Promise.all(items.map((item) => deletePantryItem(item.id)));
+      await clearAllPantryItems();
     } catch (err) {
       console.error('Failed to clear all pantry items:', err);
     }
@@ -91,5 +96,6 @@ export function usePantry(initialIngredients: string[] = []) {
     clearPantry,
     addMultiple,
     setPantry,
+    refreshPantry,
   };
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, TrendingUp, ShieldCheck, Leaf, DollarSign, Award, RefreshCw, AlertCircle } from 'lucide-react';
+import { Sparkles, TrendingUp, ShieldCheck, Leaf, RefreshCw, AlertCircle } from 'lucide-react';
 import { SustainabilityMetricsResponse } from '../../types/api';
 import { fetchSustainabilityAnalytics } from '../../services/api';
 
@@ -30,7 +30,7 @@ export const SustainabilityDashboard: React.FC = () => {
     return (
       <div className="cute-sustainability-panel cute-loading-box">
         <Sparkles className="spin-icon text-emerald-500" size={24} />
-        <span style={{ color: '#0f172a', fontWeight: 600 }}>Calculating your household eco-savings...</span>
+        <span style={{ color: '#0f172a', fontWeight: 600 }}>Loading verified pantry analytics...</span>
       </div>
     );
   }
@@ -43,7 +43,7 @@ export const SustainabilityDashboard: React.FC = () => {
         </div>
         <h3 style={{ color: '#0F172A', fontWeight: 700, marginBottom: '0.5rem' }}>Analytics Unavailable</h3>
         <p style={{ color: '#64748B', maxWidth: '420px', margin: '0 auto 1.5rem auto', fontSize: '0.9rem' }}>
-          {error || 'No sustainability data found. Prepare your first meal to log food rescue impact!'}
+          {error || 'No pantry data found. Prepare your first meal to log pantry activity!'}
         </p>
         <button
           onClick={loadMetrics}
@@ -67,37 +67,57 @@ export const SustainabilityDashboard: React.FC = () => {
     );
   }
 
-  const avoidedKg = metrics.estimated_food_waste_avoided_kg || (metrics.high_risk_rescued_count * 0.45);
-  const estimatedCostSaved = (avoidedKg * 7.5).toFixed(2);
-  const estimatedCo2Saved = (avoidedKg * 2.2).toFixed(1);
+  const itemsCookedCount = Number(metrics.high_risk_rescued_count || 0);
+  const activeItemsCount = Number(metrics.active_pantry_count || 0);
+  const nearExpiryCount = Number(metrics.current_high_risk_pantry_count || 0);
+  const recipesPreparedCount = Number(metrics.recipes_prepared_count || 0);
+  const utilizationRate = typeof metrics.pantry_utilization_rate === 'number' ? metrics.pantry_utilization_rate : 0;
+  const trendList = Array.isArray(metrics.sustainability_trend) ? metrics.sustainability_trend : [];
 
   return (
     <div className="cute-sustainability-panel">
-      {/* Cute Top Header */}
+      {/* Top Header */}
       <div className="cute-header-row">
         <div>
           <div className="cute-badge-pill">
             <Leaf size={13} className="text-emerald-600" />
-            <span>ECO HERO TRACKER</span>
+            <span>PANTRY INVENTORY & USAGE</span>
           </div>
           <h2 className="cute-dashboard-title">
-            🌱 Pantry Sustainability & Eco Analytics
+            🌱 Pantry Utilization & Cooking Analytics
           </h2>
           <p className="cute-dashboard-desc">
-            Quantifiable impact metrics tracking your household pantry utilization and zero-waste journey.
+            Factual household pantry tracking of ingredients on hand, items cooked, and upcoming expiration dates.
           </p>
         </div>
 
-        <div className="cute-hero-trophy">
-          <Award size={26} className="trophy-icon" />
-          <div className="trophy-text">
-            <strong>Eco Star</strong>
-            <span>Level 3 Saver</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={loadMetrics}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              borderRadius: '12px',
+              border: '1.5px solid #CBD5E1',
+              background: '#FFFFFF',
+              color: '#334155',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            }}
+            title="Refresh live metrics"
+          >
+            <RefreshCw size={14} className={loading ? 'spin-icon' : ''} />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 
-      {/* Cheerful Status Summary Banner */}
+      {/* Factual Status Summary Banner */}
       <div className="cute-status-banner">
         <div className="cute-banner-icon-bubble">✨</div>
         <div className="cute-banner-content">
@@ -106,84 +126,83 @@ export const SustainabilityDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* 4 Little and Cute Metric Cards */}
+      {/* 4 Factual Metric Cards */}
       <div className="cute-metrics-grid">
-        {/* Card 1: Rescued Items */}
+        {/* Card 1: Rescued / Cooked Items */}
         <div className="cute-metric-card card-peach">
           <div className="card-top-row">
-            <span className="card-emoji">🥬</span>
-            <span className="card-mini-badge badge-peach">Saved from Waste</span>
+            <span className="card-emoji">🍳</span>
+            <span className="card-mini-badge badge-peach">Utilized</span>
           </div>
-          <div className="card-number text-peach">{metrics.high_risk_rescued_count}</div>
-          <div className="card-label">High-Risk Items Rescued</div>
-          <div className="card-subtext">Cooked before spoiling</div>
+          <div className="card-number text-peach">{itemsCookedCount}</div>
+          <div className="card-label">Pantry Items Cooked</div>
+          <div className="card-subtext">Ingredients consumed in meals</div>
         </div>
 
-        {/* Card 2: Pantry Utilization */}
+        {/* Card 2: Active Pantry Items On-Hand */}
         <div className="cute-metric-card card-sky">
           <div className="card-top-row">
-            <span className="card-emoji">⚡</span>
-            <span className="card-mini-badge badge-sky">Efficiency</span>
+            <span className="card-emoji">📦</span>
+            <span className="card-mini-badge badge-sky">In Stock</span>
           </div>
-          <div className="card-number text-sky">{metrics.pantry_utilization_rate}%</div>
-          <div className="card-label">Pantry Utilization Rate</div>
-          <div className="card-subtext">Active pantry items cooked</div>
+          <div className="card-number text-sky">{activeItemsCount}</div>
+          <div className="card-label">Active Items on Hand</div>
+          <div className="card-subtext">Ready in current inventory</div>
         </div>
 
-        {/* Card 3: Food Waste Avoided */}
+        {/* Card 3: Items Expiring Soon */}
         <div className="cute-metric-card card-emerald">
           <div className="card-top-row">
-            <span className="card-emoji">📉</span>
-            <span className="card-mini-badge badge-emerald">Landfill Diverted</span>
+            <span className="card-emoji">⚠️</span>
+            <span className="card-mini-badge badge-emerald">Priority</span>
           </div>
-          <div className="card-number text-emerald">{avoidedKg.toFixed(1)} <span style={{ fontSize: '1rem', fontWeight: 600 }}>kg</span></div>
-          <div className="card-label">Food Waste Prevented</div>
-          <div className="card-subtext">~{estimatedCo2Saved} kg CO₂ emissions saved</div>
+          <div className="card-number text-emerald">{nearExpiryCount}</div>
+          <div className="card-label">Items Near Expiry (≤2 Days)</div>
+          <div className="card-subtext">Priority ingredients to cook first</div>
         </div>
 
         {/* Card 4: Recipes Prepared */}
         <div className="cute-metric-card card-lavender">
           <div className="card-top-row">
-            <span className="card-emoji">🍳</span>
+            <span className="card-emoji">🥗</span>
             <span className="card-mini-badge badge-lavender">Home Cooked</span>
           </div>
-          <div className="card-number text-lavender">{metrics.recipes_prepared_count}</div>
-          <div className="card-label">Food Rescue Meals Cooked</div>
-          <div className="card-subtext">Nutritious home meals made</div>
+          <div className="card-number text-lavender">{recipesPreparedCount}</div>
+          <div className="card-label">Meals Cooked</div>
+          <div className="card-subtext">Home recipes prepared</div>
         </div>
       </div>
 
-      {/* Eco Impact Savings Footprint Banner */}
+      {/* Factual Impact Info Banner */}
       <div className="cute-impact-chip-banner">
         <div className="impact-bubble">
-          <DollarSign size={16} className="text-amber-500" />
-          <span>Estimated <strong>${estimatedCostSaved}</strong> saved in grocery waste</span>
+          <Sparkles size={16} className="text-emerald-500" />
+          <span>Overall Pantry Utilization: <strong>{utilizationRate}%</strong></span>
         </div>
         <div className="impact-bubble">
-          <TrendingUp size={16} className="text-emerald-500" />
-          <span><strong>{avoidedKg.toFixed(1)} kg</strong> organic food preserved</span>
+          <TrendingUp size={16} className="text-sky-500" />
+          <span>Active Ingredients on Hand: <strong>{activeItemsCount}</strong></span>
         </div>
         <div className="impact-bubble">
           <ShieldCheck size={16} className="text-indigo-500" />
-          <span><strong>{metrics.current_high_risk_pantry_count || 0}</strong> items currently near expiry</span>
+          <span>Expiring Within 48 Hours: <strong>{nearExpiryCount}</strong></span>
         </div>
       </div>
 
-      {/* 7-Day Activity Trend Chart with High Contrast & Cute Pill Bars */}
+      {/* 7-Day Activity Trend Chart with Real Logged Counts */}
       <div className="cute-chart-section">
         <div className="cute-chart-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '1.1rem' }}>📊</span>
-            <h3 className="cute-chart-title">7-Day Pantry Food Rescue Activity</h3>
+            <h3 className="cute-chart-title">7-Day Pantry Food Rescue & Cooking Activity</h3>
           </div>
           <span className="cute-chart-badge">Daily Rescued Count</span>
         </div>
 
         <div className="cute-chart-canvas">
-          {metrics.sustainability_trend && metrics.sustainability_trend.length > 0 ? (
-            metrics.sustainability_trend.map((dayData, idx) => {
-              const maxItems = Math.max(1, ...metrics.sustainability_trend.map(d => d.rescued_items));
-              // When rescued_items is 0, heightPct is strictly 0% so empty days do not render fake green pill fills
+          {trendList.length > 0 ? (
+            trendList.map((dayData, idx) => {
+              const maxItems = Math.max(1, ...trendList.map(d => d.rescued_items));
               const heightPct = dayData.rescued_items === 0 ? 0 : Math.max(18, Math.min(100, (dayData.rescued_items / maxItems) * 88));
 
               return (
@@ -195,7 +214,7 @@ export const SustainabilityDashboard: React.FC = () => {
                     <div
                       className="cute-bar-fill"
                       style={{ height: `${heightPct}%`, display: dayData.rescued_items === 0 ? 'none' : 'block' }}
-                      title={`${dayData.day}: ${dayData.rescued_items} items rescued`}
+                      title={`${dayData.day}: ${dayData.rescued_items} items recorded`}
                     />
                   </div>
                   <span className="cute-day-label">{dayData.day}</span>
@@ -204,7 +223,7 @@ export const SustainabilityDashboard: React.FC = () => {
             })
           ) : (
             <div style={{ textAlign: 'center', color: '#64748b', padding: '24px', width: '100%' }}>
-              No recent activity recorded yet. Start cooking to log your sustainability score!
+              No recent activity recorded yet. Start cooking recipes to track pantry activity!
             </div>
           )}
         </div>

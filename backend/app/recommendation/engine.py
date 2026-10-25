@@ -307,7 +307,6 @@ class RecommendationEngine:
 
             from backend.app.safety.allergen_guard import allergen_guard
             from backend.app.services.food_waste_optimizer import food_waste_optimizer
-            from backend.app.services.shopping_optimizer import shopping_optimizer
             from backend.app.services.sandbox_engine import resolve_recipe_image_url
 
             # Hard Safety Filter with Semantic Allergen & Dietary Screening
@@ -331,7 +330,7 @@ class RecommendationEngine:
                 ingredients=rec["ingredients"],
                 dietary_preference=dietary_preference,
             )
-            missing_cost = sum(shopping_optimizer.estimate_item_cost(item).estimated_package_cost for item in missing)
+            missing_cost = 0.0
 
             waste_res = food_waste_optimizer.optimize_recipe_ranking(
                 recipe_id=r_id,
@@ -340,7 +339,7 @@ class RecommendationEngine:
                 missing_ingredients=missing,
                 pantry_expiry_map=pantry_risk_map,
                 total_pantry_count=len(normalized_pantry),
-                estimated_missing_cost=missing_cost,
+                estimated_missing_cost=0.0,
             )
 
             scored_candidates.append(
@@ -365,7 +364,7 @@ class RecommendationEngine:
                     image_url=img_url,
                     safety_status=safety_res.status,
                     safety_reasons=safety_res.reasons or safety_res.warnings,
-                    estimated_missing_cost=round(missing_cost, 2),
+                    estimated_missing_cost=0.0,
                     food_waste_score=waste_res.composite_waste_score,
 
                     why_this_recipe=why_this_recipe,

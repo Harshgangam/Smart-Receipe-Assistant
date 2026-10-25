@@ -661,6 +661,55 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
             </button>
           </div>
 
+          {/* Distinct Objective Focus Banner */}
+          <div style={{
+            marginTop: '14px',
+            padding: '12px 18px',
+            borderRadius: '12px',
+            background: clusterTab === 'pantry' ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.08))' :
+                        clusterTab === 'cost' ? 'linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(96, 165, 250, 0.08))' :
+                        clusterTab === 'expiry' ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(248, 113, 113, 0.08))' :
+                        clusterTab === 'quick' ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(52, 211, 153, 0.08))' :
+                        'linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(192, 132, 252, 0.06))',
+            border: `1.5px solid ${
+              clusterTab === 'pantry' ? '#F59E0B' :
+              clusterTab === 'cost' ? '#2563EB' :
+              clusterTab === 'expiry' ? '#EF4444' :
+              clusterTab === 'quick' ? '#10B981' :
+              '#A855F7'
+            }`,
+            fontSize: '0.88rem',
+            color: '#0F172A',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          }}>
+            <div style={{ lineHeight: '1.45' }}>
+              <strong style={{ color: clusterTab === 'pantry' ? '#B45309' : clusterTab === 'cost' ? '#1D4ED8' : '#0F172A' }}>
+                {clusterTab === 'pantry' ? '🌟 Max Pantry Use Objective:' :
+                 clusterTab === 'cost' ? '💰 Lowest Shopping Burden Objective:' :
+                 clusterTab === 'expiry' ? '⏳ Near-Expiry Urgency Mode:' :
+                 clusterTab === 'quick' ? '⚡ Quick Prep Express Mode:' :
+                 '🔥 Top Composite Matches:'}
+              </strong>{' '}
+              <span style={{ color: '#334155' }}>
+                {clusterTab === 'pantry'
+                  ? 'Ranks dishes that consume the highest volume and count of your on-hand pantry ingredients (minimizes pantry waste).'
+                  : clusterTab === 'cost'
+                  ? 'Minimizes grocery shopping! Strictly prioritizes 100% On-Hand meals (0 missing items) and meals needing only 1 store item.'
+                  : clusterTab === 'expiry'
+                  ? 'Ranks recipes that use up fresh ingredients closest to their expiration date first.'
+                  : clusterTab === 'quick'
+                  ? 'Ranks effortless, fast home-cooked meals ready in 30 minutes or less.'
+                  : 'Balanced multi-objective recommendation using your personalized weight sliders.'}
+              </span>
+            </div>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginLeft: '16px', whiteSpace: 'nowrap', padding: '3px 8px', background: 'rgba(255,255,255,0.7)', borderRadius: '6px' }}>
+              {displayedRecipes.length} meals
+            </span>
+          </div>
+
           {/* Live Cluster Grid */}
           <div className="recipe-cards-grid" style={{ marginTop: '16px' }}>
             {displayedRecipes.map((recipe: any) => (

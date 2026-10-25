@@ -17,9 +17,14 @@ class Settings(BaseModel):
     PROJECT_NAME: str = "AI-Powered Pantry Recipe Assistant"
     API_V1_STR: str = "/api/v1"
     
+    ROOT_DIR: Path = Path(__file__).resolve().parent.parent.parent
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
     DATA_DIR: Path = BASE_DIR / "data"
-    PROCESSED_DATA_DIR: Path = DATA_DIR / "processed"
+    PROCESSED_DATA_DIR: Path = (
+        (DATA_DIR / "processed")
+        if (DATA_DIR / "processed").exists()
+        else (ROOT_DIR / "data" / "processed")
+    )
     PARQUET_PATH: Path = PROCESSED_DATA_DIR / "recipes.parquet"
     SQLITE_INDEX_PATH: Path = PROCESSED_DATA_DIR / "ingredient_index.sqlite"
     METADATA_DB_PATH: Path = PROCESSED_DATA_DIR / "recipe_metadata.sqlite"

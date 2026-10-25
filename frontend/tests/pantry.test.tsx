@@ -40,7 +40,7 @@ describe('Pantry Management Components', () => {
     fireEvent.click(removeBtns[0]);
     expect(handleRemove).toHaveBeenCalledWith('tomato');
 
-    const clearBtn = screen.getByRole('button', { name: /Clear All/i });
+    const clearBtn = screen.getByRole('button', { name: /Reset Pantry|Clear All/i });
     fireEvent.click(clearBtn);
     expect(handleClear).toHaveBeenCalled();
   });
