@@ -17,38 +17,25 @@ class SustainabilityAnalyticsService:
         # Real-time Factual Utilization Rate (consumed items / total items ever tracked)
         utilization_rate = (consumed_count / total_items_tracked * 100.0) if total_items_tracked > 0 else 0.0
         
-        # Recipes prepared is the actual number of 'cooked' notifications logged
+        # Recipes prepared is the count of cooked meals
         notifications = pantry_store.get_notifications()
-        recipes_prepared = sum(1 for n in notifications if n.type == "cooked")
+        cooked_notifs = [n for n in notifications if n.type == "cooked"]
 
         trend_data = []
         today = datetime.datetime.now()
         
-        # Calculate daily usage based on actual records
-        daily_rescues = {}
+        # Calculate daily cooked meals based on actual records
+        daily_meals = {}
         for i in range(7):
             d = (today - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            daily_rescues[d] = 0
+            daily_meals[d] = 0
             
-        for item in consumed_items:
-            d = getattr(item, "consumed_date", None)
-            if d:
-                d = str(d).split()[0]
-            elif getattr(item, "id", None) and str(item.id).startswith("p_"):
-                try:
-                    ts = int(str(item.id).split("_")[1]) / 1000.0
-                    d = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
-                except Exception:
-                    d = None
-            if d and d in daily_rescues:
-                daily_rescues[d] += 1
-
-        for notif in notifications:
-            if notif.type == "cooked" and notif.timestamp:
+        for notif in cooked_notifs:
+            if notif.timestamp:
                 try:
                     nd = str(notif.timestamp).split()[0]
-                    if nd in daily_rescues:
-                        daily_rescues[nd] += 1
+                    if nd in daily_meals:
+                        daily_meals[nd] += 1
                 except Exception:
                     pass
 
@@ -58,14 +45,17 @@ class SustainabilityAnalyticsService:
             d_str = date_obj.strftime("%Y-%m-%d")
             day_name = date_obj.strftime("%a")
             
-            items = daily_rescues.get(d_str, 0)
-            pct = round((items / total_items_tracked * 100.0), 1) if total_items_tracked > 0 else 0
+            meals_count = daily_meals.get(d_str, 0)
+            pct = round((meals_count / max(1, len(cooked_notifs)) * 100.0), 1) if len(cooked_notifs) > 0 else 0
             
             trend_data.append({
                 "day": day_name,
-                "rescued_items": items,
+                "rescued_items": meals_count,
                 "utilization_pct": pct
             })
+
+        # Total meals cooked matches the sum of daily meals across the chart
+        recipes_prepared = sum(d["rescued_items"] for d in trend_data)
 
         if consumed_count > 0:
             status_msg = f"Pantry tracking active: {consumed_count} item{'s' if consumed_count != 1 else ''} consumed across {recipes_prepared} home-prepared meal{'s' if recipes_prepared != 1 else ''}."

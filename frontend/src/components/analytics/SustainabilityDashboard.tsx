@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, TrendingUp, ShieldCheck, Leaf, RefreshCw, AlertCircle } from 'lucide-react';
+import { Sparkles, Leaf, RefreshCw, AlertCircle } from 'lucide-react';
 import { SustainabilityMetricsResponse } from '../../types/api';
 import { fetchSustainabilityAnalytics } from '../../services/api';
 
@@ -67,12 +67,9 @@ export const SustainabilityDashboard: React.FC = () => {
     );
   }
 
-  const itemsCookedCount = Number(metrics.high_risk_rescued_count || 0);
-  const activeItemsCount = Number(metrics.active_pantry_count || 0);
-  const nearExpiryCount = Number(metrics.current_high_risk_pantry_count || 0);
-  const recipesPreparedCount = Number(metrics.recipes_prepared_count || 0);
-  const utilizationRate = typeof metrics.pantry_utilization_rate === 'number' ? metrics.pantry_utilization_rate : 0;
   const trendList = Array.isArray(metrics.sustainability_trend) ? metrics.sustainability_trend : [];
+  const totalBarGraphMeals = trendList.reduce((acc, curr) => acc + (Number(curr.rescued_items) || 0), 0);
+  const recipesPreparedCount = trendList.length > 0 ? totalBarGraphMeals : Number(metrics.recipes_prepared_count || 0);
 
   return (
     <div className="cute-sustainability-panel">
@@ -126,42 +123,8 @@ export const SustainabilityDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* 4 Factual Metric Cards */}
-      <div className="cute-metrics-grid">
-        {/* Card 1: Rescued / Cooked Items */}
-        <div className="cute-metric-card card-peach">
-          <div className="card-top-row">
-            <span className="card-emoji">🍳</span>
-            <span className="card-mini-badge badge-peach">Utilized</span>
-          </div>
-          <div className="card-number text-peach">{itemsCookedCount}</div>
-          <div className="card-label">Pantry Items Cooked</div>
-          <div className="card-subtext">Ingredients consumed in meals</div>
-        </div>
-
-        {/* Card 2: Active Pantry Items On-Hand */}
-        <div className="cute-metric-card card-sky">
-          <div className="card-top-row">
-            <span className="card-emoji">📦</span>
-            <span className="card-mini-badge badge-sky">In Stock</span>
-          </div>
-          <div className="card-number text-sky">{activeItemsCount}</div>
-          <div className="card-label">Active Items on Hand</div>
-          <div className="card-subtext">Ready in current inventory</div>
-        </div>
-
-        {/* Card 3: Items Expiring Soon */}
-        <div className="cute-metric-card card-emerald">
-          <div className="card-top-row">
-            <span className="card-emoji">⚠️</span>
-            <span className="card-mini-badge badge-emerald">Priority</span>
-          </div>
-          <div className="card-number text-emerald">{nearExpiryCount}</div>
-          <div className="card-label">Items Near Expiry (≤2 Days)</div>
-          <div className="card-subtext">Priority ingredients to cook first</div>
-        </div>
-
-        {/* Card 4: Recipes Prepared */}
+      {/* Meals Cooked Metric Card */}
+      <div className="cute-metrics-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 320px))' }}>
         <div className="cute-metric-card card-lavender">
           <div className="card-top-row">
             <span className="card-emoji">🥗</span>
@@ -173,21 +136,6 @@ export const SustainabilityDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Factual Impact Info Banner */}
-      <div className="cute-impact-chip-banner">
-        <div className="impact-bubble">
-          <Sparkles size={16} className="text-emerald-500" />
-          <span>Overall Pantry Utilization: <strong>{utilizationRate}%</strong></span>
-        </div>
-        <div className="impact-bubble">
-          <TrendingUp size={16} className="text-sky-500" />
-          <span>Active Ingredients on Hand: <strong>{activeItemsCount}</strong></span>
-        </div>
-        <div className="impact-bubble">
-          <ShieldCheck size={16} className="text-indigo-500" />
-          <span>Expiring Within 48 Hours: <strong>{nearExpiryCount}</strong></span>
-        </div>
-      </div>
 
       {/* 7-Day Activity Trend Chart with Real Logged Counts */}
       <div className="cute-chart-section">
@@ -196,7 +144,7 @@ export const SustainabilityDashboard: React.FC = () => {
             <span style={{ fontSize: '1.1rem' }}>📊</span>
             <h3 className="cute-chart-title">7-Day Pantry Food Rescue & Cooking Activity</h3>
           </div>
-          <span className="cute-chart-badge">Daily Rescued Count</span>
+          <span className="cute-chart-badge">Daily Meals Cooked</span>
         </div>
 
         <div className="cute-chart-canvas">
@@ -214,7 +162,7 @@ export const SustainabilityDashboard: React.FC = () => {
                     <div
                       className="cute-bar-fill"
                       style={{ height: `${heightPct}%`, display: dayData.rescued_items === 0 ? 'none' : 'block' }}
-                      title={`${dayData.day}: ${dayData.rescued_items} items recorded`}
+                      title={`${dayData.day}: ${dayData.rescued_items} meals cooked`}
                     />
                   </div>
                   <span className="cute-day-label">{dayData.day}</span>

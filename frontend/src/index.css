@@ -2084,7 +2084,7 @@ body {
 .allergen-checkboxes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .allergen-checkbox-label { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; }
 
-.cluster-nav-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.cluster-nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 4px; }
 .cluster-tab-btn {
   background: #FFFFFF;
   border: 1px solid var(--border-glass);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Sliders, RefreshCw, Sparkles, ShieldCheck, Plus, Check, X, RotateCcw } from 'lucide-react';
+import { RefreshCw, Sparkles, ShieldCheck, Plus, Check, X, RotateCcw } from 'lucide-react';
 import { simulateSandbox, fetchRecipeById } from '../../services/api';
 import { RecipeRecommendationItem } from '../../types/recipe';
 import { RecipeCard } from '../recommendations/RecipeCard';
@@ -123,7 +123,9 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
   }, [dietaryPreference]);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [clusterTab, setClusterTab] = useState<'all' | 'pantry' | 'cost' | 'expiry' | 'quick'>(initialSaved.clusterTab || 'all');
+  const [clusterTab, setClusterTab] = useState<'pantry' | 'cost' | 'quick'>(
+    initialSaved.clusterTab === 'cost' || initialSaved.clusterTab === 'quick' ? initialSaved.clusterTab : 'pantry'
+  );
   const [sandboxData, setSandboxData] = useState<any>(initialSaved.sandboxData || null);
 
   const effectivePantry = useMemo(() => [
@@ -206,7 +208,7 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
     setShoppingCostWeight(0.3);
     setAllergens([]);
     setCustomAllergen('');
-    setClusterTab('all');
+    setClusterTab('pantry');
     setDietary(dietaryPreference || '');
     if (onDietaryChange && dietaryPreference) {
       onDietaryChange(dietaryPreference);
@@ -348,11 +350,9 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
 
 
   const displayedRecipes: any[] = sandboxData ? (
-    clusterTab === 'pantry' ? sandboxData.clusters.max_pantry_use :
     clusterTab === 'cost' ? sandboxData.clusters.low_shopping_cost :
-    clusterTab === 'expiry' ? sandboxData.clusters.near_expiry_rescues :
     clusterTab === 'quick' ? sandboxData.clusters.quick_meals :
-    sandboxData.top_recommendations
+    sandboxData.clusters.max_pantry_use
   ) : [];
 
 
@@ -445,67 +445,11 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
             )}
           </div>
 
-          {/* Multi-Objective Optimization Sliders */}
-          <div className="control-section" style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '16px' }}>
-            <h4 className="control-title">
-              <Sliders size={16} />
-              2. Multi-Objective Weight Sliders
-            </h4>
-
-            <div className="slider-group">
-              <label className="pref-label">
-                <span>Pantry Usage Weight (PUS)</span>
-                <strong>{(pantryUsageWeight * 100).toFixed(0)}%</strong>
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                className="range-slider"
-                value={pantryUsageWeight}
-                onChange={(e) => setPantryUsageWeight(parseFloat(e.target.value))}
-              />
-            </div>
-
-            <div className="slider-group">
-              <label className="pref-label">
-                <span>Near-Expiry Urgency Weight</span>
-                <strong>{(expiryPriorityWeight * 100).toFixed(0)}%</strong>
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                className="range-slider"
-                value={expiryPriorityWeight}
-                onChange={(e) => setExpiryPriorityWeight(parseFloat(e.target.value))}
-              />
-            </div>
-
-            <div className="slider-group">
-              <label className="pref-label">
-                <span>Minimizing Missing Purchases Weight</span>
-                <strong>{(shoppingCostWeight * 100).toFixed(0)}%</strong>
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                className="range-slider"
-                value={shoppingCostWeight}
-                onChange={(e) => setShoppingCostWeight(parseFloat(e.target.value))}
-              />
-            </div>
-          </div>
-
           {/* Dietary Safety Lock */}
           <div className="control-section" style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <h4 className="control-title" style={{ margin: 0 }}>
-                3. Dietary Safety Lock
+                2. Dietary Safety Lock
               </h4>
               {dietary === 'vegetarian' && (
                 <span className="dietary-lock-badge veg-badge">🥦 Compulsory Vegetarian</span>
@@ -543,7 +487,7 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
           <div className="control-section" style={{ borderTop: '1px solid var(--border-glass)', paddingTop: '16px' }}>
             <h4 className="control-title">
               <ShieldCheck size={16} />
-              4. Hard Allergen Safety Lock
+              3. Hard Allergen Safety Lock
             </h4>
             <p className="control-desc">
               Enter any custom allergic product to strictly exclude it semantically (derivatives, forms & synonyms):
@@ -630,12 +574,6 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
           {/* Cluster Selector Tabs */}
           <div className="cluster-nav-tabs">
             <button
-              className={`cluster-tab-btn ${clusterTab === 'all' ? 'active' : ''}`}
-              onClick={() => setClusterTab('all')}
-            >
-              🔥 Top Composite Matches
-            </button>
-            <button
               className={`cluster-tab-btn ${clusterTab === 'pantry' ? 'active' : ''}`}
               onClick={() => setClusterTab('pantry')}
             >
@@ -646,12 +584,6 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
               onClick={() => setClusterTab('cost')}
             >
               💰 Lowest Shopping Burden
-            </button>
-            <button
-              className={`cluster-tab-btn ${clusterTab === 'expiry' ? 'active' : ''}`}
-              onClick={() => setClusterTab('expiry')}
-            >
-              ⏳ Near-Expiry Rescues
             </button>
             <button
               className={`cluster-tab-btn ${clusterTab === 'quick' ? 'active' : ''}`}
@@ -666,17 +598,13 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
             marginTop: '14px',
             padding: '12px 18px',
             borderRadius: '12px',
-            background: clusterTab === 'pantry' ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.08))' :
-                        clusterTab === 'cost' ? 'linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(96, 165, 250, 0.08))' :
-                        clusterTab === 'expiry' ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(248, 113, 113, 0.08))' :
+            background: clusterTab === 'cost' ? 'linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(96, 165, 250, 0.08))' :
                         clusterTab === 'quick' ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(52, 211, 153, 0.08))' :
-                        'linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(192, 132, 252, 0.06))',
+                        'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.08))',
             border: `1.5px solid ${
-              clusterTab === 'pantry' ? '#F59E0B' :
               clusterTab === 'cost' ? '#2563EB' :
-              clusterTab === 'expiry' ? '#EF4444' :
               clusterTab === 'quick' ? '#10B981' :
-              '#A855F7'
+              '#F59E0B'
             }`,
             fontSize: '0.88rem',
             color: '#0F172A',
@@ -686,23 +614,17 @@ export const LeftoverSandbox: React.FC<LeftoverSandboxProps> = ({
             boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
           }}>
             <div style={{ lineHeight: '1.45' }}>
-              <strong style={{ color: clusterTab === 'pantry' ? '#B45309' : clusterTab === 'cost' ? '#1D4ED8' : '#0F172A' }}>
-                {clusterTab === 'pantry' ? '🌟 Max Pantry Use Objective:' :
-                 clusterTab === 'cost' ? '💰 Lowest Shopping Burden Objective:' :
-                 clusterTab === 'expiry' ? '⏳ Near-Expiry Urgency Mode:' :
+              <strong style={{ color: clusterTab === 'cost' ? '#1D4ED8' : clusterTab === 'quick' ? '#047857' : '#B45309' }}>
+                {clusterTab === 'cost' ? '💰 Lowest Shopping Burden Objective:' :
                  clusterTab === 'quick' ? '⚡ Quick Prep Express Mode:' :
-                 '🔥 Top Composite Matches:'}
+                 '🌟 Max Pantry Use Objective:'}
               </strong>{' '}
               <span style={{ color: '#334155' }}>
-                {clusterTab === 'pantry'
-                  ? 'Ranks dishes that consume the highest volume and count of your on-hand pantry ingredients (minimizes pantry waste).'
-                  : clusterTab === 'cost'
+                {clusterTab === 'cost'
                   ? 'Minimizes grocery shopping! Strictly prioritizes 100% On-Hand meals (0 missing items) and meals needing only 1 store item.'
-                  : clusterTab === 'expiry'
-                  ? 'Ranks recipes that use up fresh ingredients closest to their expiration date first.'
                   : clusterTab === 'quick'
                   ? 'Ranks effortless, fast home-cooked meals ready in 30 minutes or less.'
-                  : 'Balanced multi-objective recommendation using your personalized weight sliders.'}
+                  : 'Ranks dishes that consume the highest volume and count of your on-hand pantry ingredients (minimizes pantry waste).'}
               </span>
             </div>
             <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginLeft: '16px', whiteSpace: 'nowrap', padding: '3px 8px', background: 'rgba(255,255,255,0.7)', borderRadius: '6px' }}>

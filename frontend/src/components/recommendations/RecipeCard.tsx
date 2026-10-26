@@ -1,7 +1,7 @@
 import React from 'react';
 import { Clock, Globe, Leaf, Utensils, AlertCircle, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { RecipeRecommendationItem } from '../../types/recipe';
-import { formatScore, formatTime, getDietaryLabel } from '../../utils/formatters';
+import { formatTime, getDietaryLabel } from '../../utils/formatters';
 import { getRecipeImageUrl } from '../../utils/recipeImages';
 import { ScoreBadge } from './ScoreBadge';
 
@@ -48,14 +48,6 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSelect }) => {
         <div className={`safety-badge-overlay ${safetyStatus === 'SAFE' ? 'safety-safe' : safetyStatus === 'CAUTION' ? 'safety-caution' : 'safety-blocked'}`}>
           {safetyStatus === 'SAFE' ? <ShieldCheck size={13} /> : <ShieldAlert size={13} />}
           <span>{safetyStatus} SAFETY</span>
-        </div>
-
-        {/* Match Score Floating Badge */}
-        <div className="card-score-floating" title="Food Rescue Match Score">
-          <span className="card-score-num">
-            {formatScore(recipe.recommendation_score ?? (recipe as any).match_score)}
-          </span>
-          <span className="card-score-lbl">MATCH</span>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, LayoutDashboard, ShoppingBag, UtensilsCrossed, LineChart, Sparkles, Camera, RotateCcw } from 'lucide-react';
+import { Search, LayoutDashboard, ShoppingBag, LineChart, Sparkles, Camera, RotateCcw } from 'lucide-react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { PantryInput } from './components/pantry/PantryInput';
@@ -24,7 +24,7 @@ import { cookRecipe } from './services/api';
 import { FloatingFoodStage, FloatingFoodItem } from './components/common/FloatingFoodStage';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'pantry' | 'vision' | 'recipes' | 'sandbox' | 'analytics'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'pantry' | 'vision' | 'sandbox' | 'analytics'>('dashboard');
 
   const { ingredients, setIngredients, addIngredient, removeIngredient, clearPantry, addMultiple, setPantry, refreshPantry } = usePantry([]);
 
@@ -80,7 +80,7 @@ export const App: React.FC = () => {
 
   const handleSelectFloatingFood = (item: FloatingFoodItem) => {
     setPantry(item.ingredients);
-    setActiveTab('recipes');
+    setActiveTab('dashboard');
     search(item.ingredients, preferences, 12, false, item.query);
     setInspirationFood(item.name);
     setTimeout(() => setInspirationFood(null), 4500);
@@ -98,7 +98,7 @@ export const App: React.FC = () => {
   }, [selectedRecipe]);
 
   const handleSearch = () => {
-    setActiveTab('recipes');
+    setActiveTab('dashboard');
     search(ingredients, preferences, 12, false);
   };
 
@@ -181,14 +181,6 @@ export const App: React.FC = () => {
             </button>
 
             <button
-              onClick={() => { setActiveTab('recipes'); if (!data) handleSearch(); }}
-              className={`nav-tab-btn ${activeTab === 'recipes' ? 'active' : ''}`}
-            >
-              <UtensilsCrossed size={16} />
-              <span>Recipe Recommendations</span>
-            </button>
-
-            <button
               onClick={() => setActiveTab('sandbox')}
               className={`nav-tab-btn ${activeTab === 'sandbox' ? 'active' : ''}`}
             >
@@ -233,7 +225,7 @@ export const App: React.FC = () => {
 
           {activeTab === 'analytics' && <SustainabilityDashboard />}
 
-          {(activeTab === 'dashboard' || activeTab === 'recipes') && (
+          {activeTab === 'dashboard' && (
             <main className="main-grid">
               {/* Left Column: Pantry & Personalization Controls */}
               <aside className="sidebar-card glass-panel">
